@@ -16,6 +16,18 @@ All three games share a synthwave soundtrack, sound effects, and random cheers f
 
 Players enter a name once, and scores save automatically to a shared board (This week / All time). The all-time #1 in each game holds that game's crown, shown on the home screen. When someone takes it, the home screen announces who stole the crown from whom.
 
+## Separate boards (groups)
+
+Each board is separate, with its own top-10 lists and crowns:
+
+| Link | Board |
+|---|---|
+| `…/brickfall/` | the family board |
+| `…/brickfall/?group=AFUHSD` | a separate AFUHSD board |
+| `…/brickfall/?solo` | no shared board; scores stay on that phone |
+
+A phone remembers its group after opening the link once. Opening a different group link switches it. Scores are stored with a `grp` column in Supabase, and anything without a group counts as `family`.
+
 ## Controls
 
 | Classic | Keys | Phone |

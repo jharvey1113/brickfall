@@ -957,7 +957,7 @@
         <div class="big" id="finalScore">0</div>
         <p id="finalNote"></p>
         <form class="save-form" id="saveForm" hidden>
-          <label for="playerName">Your name for the family board</label>
+          <label for="playerName">Your name for the <span class="board-name">family board</span></label>
           <div class="save-row">
             <input id="playerName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
             <button class="primary" type="submit">Save</button>
@@ -1037,7 +1037,7 @@
     <h2 id="ldDoneTitle">Level complete!</h2>
     <p class="ld-done-note" id="ldDoneNote"></p>
     <form class="save-form" id="ldNameForm" hidden>
-      <label for="ldName">Your name for the family board</label>
+      <label for="ldName">Your name for the <span class="board-name">family board</span></label>
       <div class="save-row">
         <input id="ldName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
         <button class="primary" type="submit">Save</button>
@@ -1068,6 +1068,17 @@
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   };
+
+  // Which board this phone plays on: ?group=afuhsd joins that board and is remembered,
+  // ?solo turns the shared board off entirely. No group means the family board.
+  const params = new URLSearchParams(location.search);
+  const soloMode = params.has("solo");
+  let groupRaw = (params.get("group") || "").trim();
+  if (groupRaw) store.set("brickfall-group", groupRaw);
+  else groupRaw = (store.get("brickfall-group") || "").trim();
+  const GROUP = groupRaw.toLowerCase().replace(/[^a-z0-9 _-]/g, "").trim().slice(0, 32) || "family";
+  const GROUP_LABEL = GROUP === "family" ? "Family" : groupRaw.slice(0, 32);
+  const BOARD = GROUP === "family" ? "family board" : `${GROUP_LABEL} board`;
 
   // =====================================================================
   // Sound: synthesized effects and a synthwave soundtrack (Web Audio)
@@ -2432,7 +2443,7 @@
   const lb = (() => {
     // The Claude preview can't reach outside servers, so the board only runs on the hosted copy
     const inPreview = /claude|anthropic/i.test(location.hostname);
-    const on = !!(LEADERBOARD_URL && LEADERBOARD_KEY) && !inPreview;
+    const on = !!(LEADERBOARD_URL && LEADERBOARD_KEY) && !inPreview && !soloMode;
     const base = LEADERBOARD_URL.replace(/\/+$/, "") + "/rest/v1/scores";
     const headers = { apikey: LEADERBOARD_KEY, "Content-Type": "application/json" };
 
@@ -2440,14 +2451,14 @@
       const r = await fetch(base, {
         method: "POST",
         headers: { ...headers, Prefer: "return=minimal" },
-        body: JSON.stringify({ mode, name, score: pts })
+        body: JSON.stringify({ mode, name, score: pts, grp: GROUP })
       });
       if (!r.ok) throw new Error(`save failed (${r.status})`);
     }
 
-    // Top 10 players, one row each (their best score)
+    // Top 10 players on this board, one row each (their best score)
     async function top(mode, range) {
-      let q = `${base}?select=name,score&mode=eq.${mode}&order=score.desc&limit=300`;
+      let q = `${base}?select=name,score&mode=eq.${mode}&grp=eq.${encodeURIComponent(GROUP)}&order=score.desc&limit=300`;
       if (range === "week") q += "&created_at=gte." + encodeURIComponent(new Date(Date.now() - 7 * 864e5).toISOString());
       const r = await fetch(q, { headers });
       if (!r.ok) throw new Error(`load failed (${r.status})`);
@@ -2469,6 +2480,7 @@
   let pendingScore = null;
 
   // ---- Stealable crowns: the all-time #1 in each game holds the crown ----
+  const CROWN_KEY = GROUP === "family" ? "brickfall-crowns" : `brickfall-crowns:${GROUP}`;
   const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder" };
   const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder" };
   const CROWN_SVG = '<svg viewBox="0 0 34 27" aria-hidden="true"><path d="M3 8 L10 14 L17 3 L24 14 L31 8 L28 21 H6 Z" fill="#ffd23f" stroke="#e0a800" stroke-width="1.5" stroke-linejoin="round"/><rect x="6" y="22" width="22" height="4" rx="2" fill="#e0a800"/></svg>';
@@ -2476,12 +2488,12 @@
   const fmtScore = (mode, pts) => mode === "ladder" ? `Level ${pts}` : pts.toLocaleString();
 
   function seenCrowns() {
-    try { return JSON.parse(store.get("brickfall-crowns")) || {}; } catch (e) { return {}; }
+    try { return JSON.parse(store.get(CROWN_KEY)) || {}; } catch (e) { return {}; }
   }
   function markSeen(mode, name) {
     const seen = seenCrowns();
     seen[mode] = name;
-    store.set("brickfall-crowns", JSON.stringify(seen));
+    store.set(CROWN_KEY, JSON.stringify(seen));
   }
   function renderKing(mode) {
     const el = $(KING_IDS[mode]), k = kings[mode];
@@ -2542,7 +2554,7 @@
       }
       seen[m] = k.name;
     }
-    store.set("brickfall-crowns", JSON.stringify(seen));
+    store.set(CROWN_KEY, JSON.stringify(seen));
   }
 
   function setSaveStatus(text, withChange) {
@@ -2567,10 +2579,10 @@
 
   async function saveScore(name, mode, pts) {
     $("saveForm").hidden = true;
-    setSaveStatus("Saving to the family board…");
+    setSaveStatus(`Saving to the ${BOARD}…`);
     try {
       const crown = await submitWithCrown(mode, name, pts);
-      let msg = "Saved to the family board.";
+      let msg = `Saved to the ${BOARD}.`;
       if (crown) {
         msg = crownMessage(crown, mode);
         cheer(3);
@@ -2864,12 +2876,12 @@
     async function postLevel(name, lvl) {
       const note = $("ldSaveNote");
       note.hidden = false;
-      note.textContent = "Saving to the family board…";
+      note.textContent = `Saving to the ${BOARD}…`;
       try {
         const crown = await submitWithCrown("ladder", name, lvl);
         note.textContent = crown ? crownMessage(crown, "ladder") : `Saved! ${name} reached level ${lvl}.`;
       } catch (e) {
-        note.textContent = "Couldn't save to the family board this time.";
+        note.textContent = `Couldn't save to the ${BOARD} this time.`;
       }
     }
     function complete() {
@@ -3147,6 +3159,12 @@
     if (document.hidden && (mode === "play" || mode === "clear")) togglePause();
   });
   window.addEventListener("resize", () => { resize(); if (view === "ladder") LL.renderWords(); });
+
+  // Name this phone's board everywhere it shows up
+  $("boardTitle").textContent = `${GROUP_LABEL} leaderboard`;
+  $("hubBoardBtn").textContent = `${GROUP_LABEL} leaderboard`;
+  $("menuBoardBtn").textContent = `${GROUP_LABEL} leaderboard`;
+  document.querySelectorAll(".board-name").forEach(el => { el.textContent = BOARD; });
 
   syncToggles();
   game = store.get("brickfall-mode") === "blast" ? "blast" : "classic";
