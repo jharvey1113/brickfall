@@ -5,7 +5,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const LEVEL_COUNT = 100;
+const LEVEL_COUNT = 500;
 const root = path.join(__dirname, "..");
 
 // ---- word list ----
@@ -41,7 +41,10 @@ function spec(level) {
   if (level <= 15) return { n: 5, k: 3 + Math.floor((level - 6) / 4) };
   if (level <= 30) return { n: 6, k: 4 + Math.floor((level - 16) / 5) };
   if (level <= 50) return { n: 7, k: 6 + Math.floor((level - 31) / 7) };
-  return { n: 7, k: Math.min(10, 8 + Math.floor((level - 51) / 17)) };
+  if (level <= 100) return { n: 7, k: Math.min(10, 8 + Math.floor((level - 51) / 17)) };
+  // Past 100: every third level is a quicker 6-letter breather; the rest are 7 letters and slowly get bigger
+  if (level % 3 === 0) return { n: 6, k: 8 };
+  return { n: 7, k: level <= 300 ? 9 : 10 };
 }
 
 // Every dictionary word (3+ letters) spellable from a root word, minus plurals
@@ -96,4 +99,4 @@ const data = `${start}\n  const LADDER_WORDS = ${JSON.stringify(words.join(" "))
 fs.writeFileSync(file, html.slice(0, a) + data + html.slice(b));
 
 console.log(`${words.length} words, ${levels.length} levels written.`);
-for (const i of [0, 1, 4, 5, 15, 30, 50, 99]) console.log(`  Level ${i + 1}: ${levels[i].l} -> ${levels[i].w.join(", ")}`);
+for (const i of [0, 1, 4, 5, 15, 30, 50, 99, 100, 101, 102, 299, 499]) console.log(`  Level ${i + 1}: ${levels[i].l} -> ${levels[i].w.join(", ")}`);

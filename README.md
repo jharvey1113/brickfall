@@ -8,7 +8,7 @@ A family arcade of quick games that runs in any browser, including phones.
 
 - **Classic**: rotate falling blocks and fill rows to clear them. Includes hold, a next-piece queue, a ghost piece, and levels that speed up.
 - **Brick Blast**: drag blocks from a tray of three onto an 8×8 grid. Fill rows or columns to blast them, and chain clears for combos.
-- **Letter Ladder**: swipe across a wheel of letters to spell the hidden words. Levels start with 4 letters and 2 words and climb to 7 letters and 10 words. Bonus words earn coins, and coins buy hints.
+- **Letter Ladder**: swipe across a wheel of letters to spell the hidden words. There are 500 levels, starting with 4 letters and 2 words and climbing to 7 letters and 10 words. Bonus words earn coins, and coins buy hints.
 
 All three games share a synthwave soundtrack, sound effects, and random cheers for good moves. Use the music and sound buttons (or **M**) to turn them on or off. On iPhone, the silent switch mutes the game.
 
