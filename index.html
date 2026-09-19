@@ -784,6 +784,100 @@
   @keyframes wordpop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
   @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
+  /* Spin to Win */
+  body.mode-slots {
+    --ground: #3b0f3f;
+    --muted: #e6c8e8;
+    background: linear-gradient(180deg, #5b1450 0%, #3b0f3f 45%, #230a2e 100%) fixed;
+  }
+  .slots { display: none; }
+  .view-slots .slots { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 440px; }
+  .view-slots .game, .view-slots .blast-score, .view-slots .blast-hint, .view-slots .gesture-hint,
+  .view-slots .ladder, .view-hub .slots, .view-ladder .slots, .view-play .slots { display: none !important; }
+  .view-slots #pauseBtn { display: none; }
+  .mode-slots header { justify-content: flex-end; }
+  .mode-slots .wordmark { display: none; }
+  .mode-slots .ghost-btn { background: rgba(255, 255, 255, 0.16); border-color: transparent; color: #fff; }
+  .tile-slots { background: linear-gradient(160deg, #7a1c6b, #3b0f3f); }
+
+  #slotWheel { display: block; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45)); }
+  .slot-meter { width: min(260px, 70%); height: 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.35); overflow: hidden; }
+  .slot-meter span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ffd23f, #ff8fb5); transition: width 0.3s; }
+  .slot-machine {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #6d1a5f, #3a0f3d);
+    box-shadow: inset 0 0 0 3px #ffd23f, 0 6px 0 rgba(0, 0, 0, 0.35);
+  }
+  #slotReels { display: block; border-radius: 10px; background: #0d1030; }
+  .slot-handle { position: relative; width: 46px; cursor: grab; touch-action: none; }
+  .slot-handle-track {
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    bottom: 6px;
+    width: 8px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .slot-knob {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff9f9f, #c0392b);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  }
+  .slot-win {
+    margin: 0;
+    min-height: 26px;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: 19px;
+    color: #ffd23f;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .slot-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .slot-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px 4px 5px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.28);
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+  .slot-chips svg { width: 24px; height: 24px; }
+  .slot-chips circle { fill: #ffd23f; }
+  .slot-chips text { fill: #7a5200; font-family: "Fredoka", var(--body); }
+  .slot-betbox { display: flex; align-items: center; gap: 6px; background: rgba(0, 0, 0, 0.28); border-radius: 999px; padding: 3px; }
+  .slot-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); color: #fff; font-size: 20px; font-weight: 700; line-height: 1; }
+  .slot-bet { font-family: "Fredoka", var(--body); font-size: 15px; color: #fff; min-width: 66px; text-align: center; }
+  .slot-spin { font-size: 18px; padding: 10px 28px; }
+  .mode-slots .primary {
+    background: #ffd23f;
+    color: #3b0f3f;
+    box-shadow: 0 3px 0 #b38a12;
+    font-family: "Fredoka", var(--body);
+    border-radius: 999px;
+  }
+  .slot-msg { margin: 0; min-height: 20px; color: #f0d9f2; font-size: 14px; text-align: center; }
+  .mode-slots .modal-card { background: #4a1250; border-color: rgba(255, 255, 255, 0.2); }
+  .seg-4 { grid-template-columns: repeat(4, 1fr); }
+  .seg-4 button { font-size: 12px; padding: 6px 2px; }
+
   /* Cheers ("Sweet!", "Awesome!") */
   .cheer {
     position: fixed;
@@ -871,6 +965,22 @@
         <span class="tile-sub" id="hubBlast">Drag &amp; clear</span>
         <span class="tile-king" id="kingBlast"></span>
       </button>
+      <button class="hub-tile tile-slots" type="button" data-go="slots">
+        <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
+          <circle cx="30" cy="12" r="10" fill="#ffd23f"/>
+          <path d="M30 2 A10 10 0 0 1 40 12 L30 12 Z" fill="#ef5b52"/>
+          <path d="M30 22 A10 10 0 0 1 20 12 L30 12 Z" fill="#3d7be0"/>
+          <rect x="8" y="26" width="44" height="16" rx="3" fill="#1b2450"/>
+          <rect x="11" y="29" width="11" height="10" rx="2" fill="#ef5b52"/>
+          <rect x="24" y="29" width="11" height="10" rx="2" fill="#ffd23f"/>
+          <rect x="37" y="29" width="11" height="10" rx="2" fill="#2ec4f1"/>
+          <rect x="52" y="24" width="3" height="12" rx="1.5" fill="#c9d3e8"/>
+          <circle cx="53.5" cy="23" r="3" fill="#ef5b52"/>
+        </svg>
+        <span class="tile-name">Spin to Win</span>
+        <span class="tile-sub" id="hubSlots">Slots &amp; bonus wheel</span>
+        <span class="tile-king" id="kingSlots"></span>
+      </button>
       <button class="hub-tile tile-ladder" type="button" data-go="ladder">
         <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
           <circle cx="30" cy="22" r="20" fill="rgba(255,255,255,0.18)"/>
@@ -885,6 +995,42 @@
       </button>
     </div>
     <button class="ghost-btn lb-only hub-board" id="hubBoardBtn" type="button">Family leaderboard</button>
+  </section>
+
+  <section class="slots" id="slots" aria-label="Spin to Win">
+    <canvas id="slotWheel" aria-label="Bonus wheel"></canvas>
+    <div class="slot-meter" title="Crowns collected"><span id="slotMeter"></span></div>
+    <div class="slot-machine">
+      <canvas id="slotReels" aria-label="Reels"></canvas>
+      <div class="slot-handle" id="slotHandle" role="button" tabindex="0" aria-label="Pull the handle to spin">
+        <div class="slot-handle-track"></div>
+        <div class="slot-knob" id="slotKnob"></div>
+      </div>
+    </div>
+    <p class="slot-win" id="slotWin" aria-live="polite"></p>
+    <div class="slot-controls">
+      <span class="slot-chips" title="Chips">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="700">¢</text></svg>
+        <span id="slotChips">0</span>
+      </span>
+      <span class="slot-betbox">
+        <button class="slot-btn" id="slotBetDown" type="button" aria-label="Lower bet">−</button>
+        <span class="slot-bet">Bet <b id="slotBet">10</b></span>
+        <button class="slot-btn" id="slotBetUp" type="button" aria-label="Raise bet">+</button>
+      </span>
+      <button class="primary slot-spin" id="slotSpin" type="button">Spin</button>
+    </div>
+    <button class="ladder-btn" id="slotRefill" type="button" hidden>Free chips +200</button>
+    <p class="slot-msg" id="slotMsg" aria-live="polite"><span id="slotFree"></span></p>
+    <div id="slotSave" hidden>
+      <form class="save-form" id="slotSaveForm">
+        <label for="slotName">Your name for the <span class="board-name">family board</span></label>
+        <div class="save-row">
+          <input id="slotName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
+          <button class="primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
   </section>
 
   <section class="ladder" id="ladder" aria-label="Letter Ladder">
@@ -1018,10 +1164,11 @@
       <h2 id="boardTitle">Family leaderboard</h2>
       <button class="link-btn" id="boardClose" type="button">Close</button>
     </div>
-    <div class="seg seg-3" id="boardModeSeg">
+    <div class="seg seg-4" id="boardModeSeg">
       <button type="button" data-mode="classic" aria-pressed="false">Classic</button>
       <button type="button" data-mode="blast" aria-pressed="true">Blast</button>
       <button type="button" data-mode="ladder" aria-pressed="false">Ladder</button>
+      <button type="button" data-mode="slots" aria-pressed="false">Spin</button>
     </div>
     <div class="seg" id="boardRangeSeg">
       <button type="button" data-range="week" aria-pressed="true">This week</button>
@@ -1239,6 +1386,17 @@
       }),
       hold: () => play(t => fm({ f: 660, ratio: 2, index: 0.8, when: t, dur: 0.3, vol: 0.07, sends: [[revIn, 0.3]] })),
       pickup: () => play(t => osc({ f: 380, f2: 640, when: t, dur: 0.08, vol: 0.12 })),
+      // Spin to Win: handle pull, reel whir, reel clunk, wheel tick
+      lever: () => play(t => {
+        osc({ type: "sawtooth", f: 180, f2: 70, when: t, dur: 0.25, vol: 0.12, cutoff: 900 });
+        noise({ when: t, dur: 0.12, vol: 0.05, hp: 1200 });
+      }),
+      spinStart: () => play(t => noise({ when: t, dur: 0.5, vol: 0.05, hp: 2000, lp: 8000, attack: 0.06 })),
+      reelStop: () => play(t => {
+        osc({ f: 220, f2: 90, when: t, dur: 0.1, vol: 0.3 });
+        noise({ when: t, dur: 0.03, vol: 0.06, lp: 2000 });
+      }),
+      tick: () => play(t => noise({ when: t, dur: 0.02, vol: 0.07, hp: 3000 })),
       // Letter Ladder: each letter in a word rings one step higher
       letter: i => play(t => osc({ f: mtof(72 + BELL[Math.min(i, BELL.length - 1)]), when: t, dur: 0.14, vol: 0.06,
                                    sends: [[revIn, 0.2]] })),
@@ -2305,7 +2463,7 @@
   // Game flow
   // =====================================================================
   function applyModeClass() {
-    document.body.classList.remove("mode-ladder");
+    document.body.classList.remove("mode-ladder", "mode-slots");
     document.body.classList.toggle("mode-blast", game === "blast");
   }
 
@@ -2428,9 +2586,13 @@
     last = now;
     if (mode !== "pause") {
       updateFx(dt);
-      if (game === "classic") C.update(dt); else B.update(dt);
+      if (view === "slots") S.tick(dt);
+      else if (game === "classic") C.update(dt);
+      else B.update(dt);
     }
-    if (game === "classic") C.draw(); else B.draw();
+    if (view === "slots") S.draw();
+    else if (game === "classic") C.draw();
+    else B.draw();
     const lock = mode === "play" || mode === "clear" || mode === "ending";
     if (lock !== locked) { locked = lock; document.documentElement.classList.toggle("locked", lock); }
     requestAnimationFrame(loop);
@@ -2481,8 +2643,8 @@
 
   // ---- Stealable crowns: the all-time #1 in each game holds the crown ----
   const CROWN_KEY = GROUP === "family" ? "brickfall-crowns" : `brickfall-crowns:${GROUP}`;
-  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder" };
-  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder" };
+  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder", slots: "Spin to Win" };
+  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder", slots: "kingSlots" };
   const CROWN_SVG = '<svg viewBox="0 0 34 27" aria-hidden="true"><path d="M3 8 L10 14 L17 3 L24 14 L31 8 L28 21 H6 Z" fill="#ffd23f" stroke="#e0a800" stroke-width="1.5" stroke-linejoin="round"/><rect x="6" y="22" width="22" height="4" rx="2" fill="#e0a800"/></svg>';
   const kings = {};
   const fmtScore = (mode, pts) => mode === "ladder" ? `Level ${pts}` : pts.toLocaleString();
@@ -2664,7 +2826,7 @@
 
   function openBoard() {
     boardOpener = document.activeElement;
-    boardMode = view === "ladder" ? "ladder" : game;
+    boardMode = view === "ladder" ? "ladder" : view === "slots" ? "slots" : game;
     syncSeg();
     $("boardModal").hidden = false;
     $("boardClose").focus();
@@ -3015,23 +3177,482 @@
   })();
 
   // =====================================================================
+  // Spin to Win (slot machine with a bonus wheel)
+  // =====================================================================
+  const S = (() => {
+    const BETS = [5, 10, 25, 50, 100];
+    const SYMBOLS = [
+      { k: "cherry", pay: 5,   n: 7, color: "#ef5b52" },
+      { k: "bar",    pay: 12,  n: 6, color: "#f08a3c" },
+      { k: "gem",    pay: 18,  n: 5, color: "#2ec4f1" },
+      { k: "star",   pay: 30,  n: 4, color: "#ffd23f" },
+      { k: "seven",  pay: 80,  n: 3, color: "#b15cff" },
+      { k: "crown",  pay: 200, n: 2, color: "#ffd23f" }
+    ];
+    // Reel strip: symbols spread out so the same one doesn't clump together
+    const STRIP = (() => {
+      const pool = [];
+      SYMBOLS.forEach((s, i) => { for (let j = 0; j < s.n; j++) pool.push(i); });
+      const out = [];
+      let idx = 0;
+      while (pool.length) {
+        idx = (idx + 7) % pool.length;
+        out.push(pool.splice(idx, 1)[0]);
+      }
+      return out;
+    })();
+    const WEDGES = [
+      { t: "×2", mult: 2 }, { t: "×8", mult: 8 }, { t: "×5", mult: 5 }, { t: "×15", mult: 15 },
+      { t: "×3", mult: 3 }, { t: "FREE 5", free: 5 }, { t: "×10", mult: 10 }, { t: "×4", mult: 4 },
+      { t: "×6", mult: 6 }, { t: "JACKPOT", mult: 50 }, { t: "×20", mult: 20 }, { t: "×25", mult: 25 }
+    ];
+    const METER_MAX = 36;
+    const WEDGE_COLORS = ["#ef5b52", "#3d7be0", "#f2c94c", "#3ddc84", "#b15cff", "#ff8fb5"];
+    const TAU = Math.PI * 2;
+
+    const reelCanvas = $("slotReels"), rctx = reelCanvas.getContext("2d");
+    const wheelCanvas = $("slotWheel"), wctx = wheelCanvas.getContext("2d");
+
+    let st = load();
+    let reels = [0, 1, 2].map(i => ({ pos: i * 5, vel: 0, state: "idle", from: 0, to: 0, t: 0, dur: 0, target: 0 }));
+    let wheel = { angle: 0, spinning: false, t: 0, dur: 0, from: 0, to: 0, prize: -1, lastTick: 0, live: false };
+    let tile = 60, wheelSize = 260, autoTimer = null;
+
+    function fresh() { return { chips: 500, bet: 10, meter: 0, free: 0, best: 0, day: "" }; }
+    function load() {
+      try {
+        const s = JSON.parse(store.get("brickfall-slots"));
+        if (s && typeof s.chips === "number") return Object.assign(fresh(), s);
+      } catch (e) {}
+      return fresh();
+    }
+    function save() { store.set("brickfall-slots", JSON.stringify(st)); }
+    const busy = () => wheel.spinning || reels.some(r => r.state !== "idle");
+    const msg = t => { $("slotMsg").textContent = t; };
+
+    // ---- symbol art ----
+    function drawSymbol(ctx, i, x, y, s) {
+      const sym = SYMBOLS[i];
+      B.bevel(ctx, x, y, s, "#1b2450", 1);
+      ctx.save();
+      ctx.translate(x + s / 2, y + s / 2);
+      const u = s / 100;
+      ctx.fillStyle = sym.color;
+      ctx.strokeStyle = "rgba(0,0,0,0.35)";
+      ctx.lineWidth = 2 * u;
+      if (sym.k === "cherry") {
+        ctx.beginPath(); ctx.arc(-16 * u, 18 * u, 17 * u, 0, TAU); ctx.fill();
+        ctx.beginPath(); ctx.arc(18 * u, 24 * u, 14 * u, 0, TAU); ctx.fill();
+        ctx.strokeStyle = "#3ddc84"; ctx.lineWidth = 5 * u;
+        ctx.beginPath(); ctx.moveTo(-16 * u, 18 * u); ctx.quadraticCurveTo(6 * u, -20 * u, 22 * u, -30 * u); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(18 * u, 24 * u); ctx.quadraticCurveTo(22 * u, -6 * u, 22 * u, -30 * u); ctx.stroke();
+      } else if (sym.k === "bar") {
+        for (const oy of [-26, 0, 26]) {
+          const w = 66 * u, h = 20 * u;
+          ctx.fillStyle = sym.color;
+          ctx.fillRect(-w / 2, oy * u - h / 2, w, h);
+          ctx.fillStyle = "rgba(255,255,255,0.35)";
+          ctx.fillRect(-w / 2, oy * u - h / 2, w, 4 * u);
+        }
+      } else if (sym.k === "gem") {
+        ctx.beginPath();
+        ctx.moveTo(0, -34 * u); ctx.lineTo(34 * u, -4 * u); ctx.lineTo(0, 34 * u); ctx.lineTo(-34 * u, -4 * u);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.beginPath(); ctx.moveTo(0, -34 * u); ctx.lineTo(34 * u, -4 * u); ctx.lineTo(0, -4 * u); ctx.closePath(); ctx.fill();
+      } else if (sym.k === "star") {
+        ctx.beginPath();
+        for (let p = 0; p < 10; p++) {
+          const r = p % 2 ? 15 * u : 34 * u, a = -Math.PI / 2 + (p * Math.PI) / 5;
+          p ? ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r) : ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+        }
+        ctx.closePath(); ctx.fill();
+      } else if (sym.k === "seven") {
+        ctx.font = `700 ${72 * u}px "Fredoka", sans-serif`;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("7", 0, 4 * u);
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(-34 * u, -14 * u); ctx.lineTo(-17 * u, 2 * u); ctx.lineTo(0, -26 * u);
+        ctx.lineTo(17 * u, 2 * u); ctx.lineTo(34 * u, -14 * u); ctx.lineTo(27 * u, 22 * u); ctx.lineTo(-27 * u, 22 * u);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#e0a800";
+        ctx.fillRect(-27 * u, 24 * u, 54 * u, 8 * u);
+      }
+      ctx.restore();
+    }
+
+    // ---- reels ----
+    const symAt = (r, k) => STRIP[(((Math.floor(r.pos) + k) % STRIP.length) + STRIP.length) % STRIP.length];
+    const visible = r => [symAt(r, -1), symAt(r, 0), symAt(r, 1)];
+
+    function spin() {
+      if (busy()) return;
+      snd.init();
+      if (st.free > 0) st.free--;
+      else {
+        if (st.chips < st.bet) { msg("Out of chips — tap Free chips."); snd.sfx.invalid(); return; }
+        st.chips -= st.bet;
+      }
+      save();
+      renderTop();
+      msg("");
+      $("slotWin").textContent = "";
+      wheel.live = false;
+      reels.forEach((r, i) => {
+        r.state = "spin";
+        r.vel = 26 + Math.random() * 4;
+        r.t = 0;
+        r.dur = 0.55 + i * 0.32;
+        r.target = Math.floor(Math.random() * STRIP.length);
+      });
+      snd.sfx.spinStart();
+    }
+
+    function update(dt) {
+      for (const r of reels) {
+        if (r.state === "spin") {
+          r.pos += r.vel * dt;
+          r.t += dt;
+          if (r.t >= r.dur) {
+            // glide to the chosen symbol, a few slots ahead
+            const base = Math.ceil(r.pos) + 6;
+            const land = base + (((r.target - base) % STRIP.length) + STRIP.length) % STRIP.length;
+            r.state = "stop"; r.from = r.pos; r.to = land; r.t = 0; r.dur = 0.65;
+          }
+        } else if (r.state === "stop") {
+          r.t += dt;
+          const p = Math.min(1, r.t / r.dur);
+          const e = 1 - Math.pow(1 - p, 3);
+          r.pos = r.from + (r.to - r.from) * e;
+          if (p >= 1) { r.pos = r.to; r.state = "idle"; snd.sfx.reelStop(); shake(3); }
+        }
+      }
+      if (wheel.spinning) {
+        wheel.t += dt;
+        const p = Math.min(1, wheel.t / wheel.dur);
+        const e = 1 - Math.pow(1 - p, 3.2);
+        wheel.angle = wheel.from + (wheel.to - wheel.from) * e;
+        const tick = Math.floor((wheel.angle / TAU) * WEDGES.length);
+        if (tick !== wheel.lastTick) { wheel.lastTick = tick; snd.sfx.tick(); }
+        if (p >= 1) { wheel.spinning = false; wheelPrize(); }
+      }
+    }
+
+    // ---- payouts ----
+    function settle() {
+      const mids = reels.map(r => symAt(r, 0));
+      const vis = reels.map(visible);
+      let win = 0, label = "";
+      if (mids[0] === mids[1] && mids[1] === mids[2]) {
+        const sym = SYMBOLS[mids[0]];
+        win = st.bet * sym.pay;
+        label = `Three ${sym.k}s! +${win.toLocaleString()}`;
+      } else {
+        const cherries = mids.filter(i => SYMBOLS[i].k === "cherry").length;
+        if (cherries >= 2) { win = st.bet; label = `Two cherries +${win.toLocaleString()}`; }
+      }
+      const crowns = vis.map(v => v.filter(i => SYMBOLS[i].k === "crown").length);
+      const total = crowns.reduce((a, b) => a + b, 0);
+      st.meter = Math.min(METER_MAX, st.meter + total);
+      let bonus = mids.every(i => SYMBOLS[i].k === "crown");
+      if (st.meter >= METER_MAX) { bonus = true; st.meter = 0; }
+
+      if (win) {
+        st.chips += win;
+        $("slotWin").textContent = label;
+        recordWin(win);
+        if (win >= st.bet * 20) { snd.sfx.big(); cheer(3); }
+        else if (win >= st.bet * 8) { snd.sfx.clear(3, 1); cheer(2); }
+        else snd.sfx.clear(1, 0);
+        coinBurst(win >= st.bet * 20 ? 60 : 25);
+      } else if (!bonus) {
+        msg(st.free > 0 ? `${st.free} free spin${st.free === 1 ? "" : "s"} left` : "");
+      }
+      save();
+      renderTop();
+      if (bonus) setTimeout(startWheel, 700);
+      else if (st.free > 0) autoTimer = setTimeout(spin, 900);
+    }
+
+    function coinBurst(n) {
+      const rect = reelCanvas.getBoundingClientRect();
+      const s = tile * dpr;
+      for (let i = 0; i < 3; i++) burst(i * s * 1.1, s, s, "#ffd23f", Math.round(n / 3));
+    }
+
+    // ---- bonus wheel ----
+    function startWheel() {
+      wheel.live = true;
+      wheel.prize = Math.floor(Math.random() * WEDGES.length);
+      const seg = TAU / WEDGES.length;
+      // land the middle of the chosen wedge under the pointer at the top
+      const target = TAU * 6 + (TAU - (wheel.prize + 0.5) * seg);
+      wheel.from = wheel.angle % TAU;
+      wheel.to = wheel.from + target;
+      wheel.t = 0;
+      wheel.dur = 5.2;
+      wheel.spinning = true;
+      msg("Bonus wheel!");
+      cheer(3);
+      snd.sfx.levelUp();
+    }
+    function wheelPrize() {
+      const p = WEDGES[wheel.prize];
+      let text = "";
+      if (p.mult) {
+        const won = st.bet * p.mult;
+        st.chips += won;
+        text = `${p.t === "JACKPOT" ? "JACKPOT!" : p.t} — ${won.toLocaleString()} chips!`;
+        recordWin(won);
+        coinBurst(p.mult >= 20 ? 90 : 50);
+      } else { st.free += p.free; text = `${p.free} free spins!`; }
+      $("slotWin").textContent = text;
+      msg("");
+      save();
+      renderTop();
+      snd.sfx.big();
+      cheer(3);
+      shake(12);
+      if (st.free > 0) autoTimer = setTimeout(spin, 1200);
+    }
+
+    // ---- leaderboard ----
+    async function recordWin(win) {
+      if (win <= st.best) return;
+      st.best = win;
+      save();
+      if (!lb.on) return;
+      const name = playerName();
+      if (!name) { $("slotSave").hidden = false; return; }
+      try {
+        const crown = await submitWithCrown("slots", name, win);
+        if (crown) { $("slotWin").textContent = crownMessage(crown, "slots"); cheer(3); }
+      } catch (e) {}
+    }
+    $("slotSaveForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = $("slotName").value.trim().slice(0, 16);
+      if (!name) { $("slotName").focus(); return; }
+      store.set("brickfall-name", name);
+      $("slotSave").hidden = true;
+      const win = st.best;
+      st.best = 0;
+      recordWin(win);
+    });
+
+    // ---- drawing ----
+    function draw() {
+      const s = tile * dpr, w = reelCanvas.width, h = reelCanvas.height;
+      rctx.fillStyle = "#0d1030";
+      rctx.fillRect(0, 0, w, h);
+      const gap = s * 0.08;
+      reels.forEach((r, i) => {
+        const x = i * (s + gap) + gap / 2;
+        rctx.save();
+        rctx.beginPath();
+        rctx.rect(x, 0, s, h);
+        rctx.clip();
+        const frac = r.pos - Math.floor(r.pos);
+        for (let k = -1; k <= 2; k++) {
+          const y = h / 2 - s / 2 + (k - frac) * s;
+          drawSymbol(rctx, symAt(r, k), x, y, s);
+        }
+        rctx.restore();
+      });
+      // payline
+      rctx.strokeStyle = "rgba(255,210,63,0.85)";
+      rctx.lineWidth = Math.max(2, dpr * 2);
+      rctx.beginPath();
+      rctx.moveTo(0, h / 2); rctx.lineTo(w, h / 2);
+      rctx.stroke();
+      drawParticles(rctx);
+
+      // wheel
+      const W = wheelCanvas.width, R = W / 2 - 6 * dpr, cx = W / 2, cy = W / 2;
+      wctx.clearRect(0, 0, W, wheelCanvas.height);
+      const seg = TAU / WEDGES.length;
+      wctx.save();
+      wctx.translate(cx, cy);
+      wctx.rotate(wheel.angle);
+      WEDGES.forEach((p, i) => {
+        wctx.beginPath();
+        wctx.moveTo(0, 0);
+        wctx.arc(0, 0, R, i * seg, (i + 1) * seg);
+        wctx.closePath();
+        wctx.fillStyle = wheel.live || wheel.spinning ? WEDGE_COLORS[i % WEDGE_COLORS.length] : shadeHex(WEDGE_COLORS[i % WEDGE_COLORS.length], -0.45);
+        wctx.fill();
+        wctx.strokeStyle = "rgba(0,0,0,0.35)";
+        wctx.lineWidth = 2 * dpr;
+        wctx.stroke();
+        wctx.save();
+        wctx.rotate((i + 0.5) * seg);
+        wctx.fillStyle = p.t === "JACKPOT" ? "#fff" : "rgba(20,10,30,0.85)";
+        wctx.font = `700 ${(p.t.length > 5 ? 13 : 17) * dpr}px "Fredoka", sans-serif`;
+        wctx.textAlign = "right";
+        wctx.textBaseline = "middle";
+        wctx.fillText(p.t, R - 10 * dpr, 0);
+        wctx.restore();
+      });
+      wctx.beginPath();
+      wctx.arc(0, 0, R * 0.17, 0, TAU);
+      wctx.fillStyle = "#ffd23f";
+      wctx.fill();
+      wctx.restore();
+      // rim + pointer
+      wctx.beginPath();
+      wctx.arc(cx, cy, R + 3 * dpr, 0, TAU);
+      wctx.strokeStyle = "#ffd23f";
+      wctx.lineWidth = 5 * dpr;
+      wctx.stroke();
+      wctx.beginPath();
+      wctx.moveTo(cx - 12 * dpr, 2 * dpr);
+      wctx.lineTo(cx + 12 * dpr, 2 * dpr);
+      wctx.lineTo(cx, 30 * dpr);
+      wctx.closePath();
+      wctx.fillStyle = "#fff";
+      wctx.fill();
+      wctx.strokeStyle = "rgba(0,0,0,0.4)";
+      wctx.lineWidth = 2 * dpr;
+      wctx.stroke();
+    }
+    function shadeHex(hex, amt) {
+      const n = parseInt(hex.slice(1), 16);
+      let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+      const t = amt > 0 ? 255 : 0, a = Math.abs(amt);
+      r = Math.round(r + (t - r) * a); g = Math.round(g + (t - g) * a); b = Math.round(b + (t - b) * a);
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function renderTop() {
+      $("slotChips").textContent = st.chips.toLocaleString();
+      $("slotBet").textContent = st.bet;
+      $("slotMeter").style.width = (st.meter / METER_MAX) * 100 + "%";
+      $("slotFree").textContent = st.free ? `${st.free} free` : "";
+      $("slotRefill").hidden = st.chips >= BETS[0];
+    }
+
+    function size() {
+      const narrow = window.innerWidth < 720;
+      const avail = Math.min(window.innerWidth - 36, 420);
+      wheelSize = Math.min(avail, 300, Math.max(180, window.innerHeight * 0.38));
+      // leave room for the handle (46px) and the machine's padding
+      tile = Math.floor(Math.min((avail - 78) / 3, (window.innerHeight - wheelSize - 270) / 1.6, 96));
+      tile = Math.max(48, tile);
+      const w = tile * 3 + tile * 0.16, h = tile * 1.9;
+      reelCanvas.style.width = w + "px";
+      reelCanvas.style.height = h + "px";
+      reelCanvas.width = Math.round(w * dpr);
+      reelCanvas.height = Math.round(h * dpr);
+      wheelCanvas.style.width = wheelSize + "px";
+      wheelCanvas.style.height = wheelSize + "px";
+      wheelCanvas.width = Math.round(wheelSize * dpr);
+      wheelCanvas.height = Math.round(wheelSize * dpr);
+      $("slotHandle").style.height = h + "px";
+    }
+
+    // ---- handle ----
+    (() => {
+      const handle = $("slotHandle"), knob = $("slotKnob");
+      let drag = null;
+      const setPull = y => { knob.style.transform = `translateY(${y}px)`; };
+      handle.addEventListener("pointerdown", e => {
+        if (busy()) return;
+        e.preventDefault();
+        try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+        drag = { y0: e.clientY, pulled: 0 };
+        knob.style.transition = "none";
+        snd.init();
+      });
+      handle.addEventListener("pointermove", e => {
+        if (!drag) return;
+        drag.pulled = Math.max(0, Math.min(handle.clientHeight - 54, e.clientY - drag.y0));
+        setPull(drag.pulled);
+      });
+      const release = () => {
+        if (!drag) return;
+        const pulled = drag.pulled;
+        drag = null;
+        knob.style.transition = "transform .35s cubic-bezier(.3,1.6,.5,1)";
+        setPull(0);
+        if (pulled > 24) { snd.sfx.lever(); spin(); }
+      };
+      handle.addEventListener("pointerup", release);
+      handle.addEventListener("pointercancel", release);
+      handle.addEventListener("click", () => { if (!busy()) { snd.sfx.lever(); spin(); } });
+    })();
+
+    $("slotSpin").addEventListener("click", () => { snd.sfx.lever(); spin(); });
+    $("slotBetDown").addEventListener("click", () => {
+      const i = BETS.indexOf(st.bet);
+      st.bet = BETS[Math.max(0, i - 1)];
+      save(); renderTop(); snd.sfx.move();
+    });
+    $("slotBetUp").addEventListener("click", () => {
+      const i = BETS.indexOf(st.bet);
+      st.bet = BETS[Math.min(BETS.length - 1, i + 1)];
+      save(); renderTop(); snd.sfx.move();
+    });
+    $("slotRefill").addEventListener("click", () => {
+      st.chips += 200;
+      save(); renderTop();
+      msg("+200 free chips");
+      snd.sfx.pickup();
+    });
+
+    function key(e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); snd.sfx.lever(); spin(); }
+    }
+
+    function enter() {
+      clearTimeout(autoTimer);
+      const today = new Date().toDateString();
+      if (st.day !== today) {
+        st.day = today;
+        st.chips += 250;
+        save();
+        msg("Daily bonus: +250 chips!");
+        setTimeout(() => cheer(1), 200);
+      } else msg("");
+      $("slotSave").hidden = !(lb.on && !playerName() && st.best > 0);
+      size();
+      renderTop();
+      $("slotWin").textContent = "";
+    }
+    function leave() { clearTimeout(autoTimer); }
+
+    // settle once every reel has landed
+    let wasBusy = false;
+    function tick(dt) {
+      update(dt);
+      const now = busy();
+      if (wasBusy && !now && !wheel.spinning) settle();
+      wasBusy = now;
+    }
+
+    return { enter, leave, key, size, draw, tick, get best() { return st.best; }, get chips() { return st.chips; } };
+  })();
+
+  // =====================================================================
   // Home screen and navigation
   // =====================================================================
   let view = "hub";
   function setView(v) {
     view = v;
-    document.body.classList.remove("view-hub", "view-play", "view-ladder");
+    document.body.classList.remove("view-hub", "view-play", "view-ladder", "view-slots");
     document.body.classList.add("view-" + v);
   }
   function updateHub() {
     $("hubClassic").textContent = bests.classic ? `Best ${bests.classic.toLocaleString()}` : "Falling blocks";
     $("hubBlast").textContent = bests.blast ? `Best ${bests.blast.toLocaleString()}` : "Drag & clear";
     $("hubLadder").textContent = LL.best ? `On level ${LL.level}` : "Find the words";
+    $("hubSlots").textContent = S.best ? `Best win ${S.best.toLocaleString()}` : "Slots & bonus wheel";
   }
   function goHub() {
     if (view === "play") { mode = "start"; B.reset(); C.clearCur(); hideOverlays(); }
+    S.leave();
     snd.stopMusic();
-    document.body.classList.remove("mode-blast", "mode-ladder");
+    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots");
     setView("hub");
     updateHub();
     updateStats();
@@ -3048,15 +3669,27 @@
   }
   function openLadder() {
     setView("ladder");
-    document.body.classList.remove("mode-blast");
+    document.body.classList.remove("mode-blast", "mode-slots");
     document.body.classList.add("mode-ladder");
     snd.init();
     snd.setBpm(100);
     snd.startMusic();
     LL.enter();
   }
+  function openSlots() {
+    setView("slots");
+    document.body.classList.remove("mode-blast", "mode-ladder");
+    document.body.classList.add("mode-slots");
+    snd.init();
+    snd.setBpm(112);
+    snd.startMusic();
+    S.enter();
+  }
   document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
-    if (b.dataset.go === "ladder") openLadder(); else openGame(b.dataset.go);
+    const go = b.dataset.go;
+    if (go === "ladder") openLadder();
+    else if (go === "slots") openSlots();
+    else openGame(go);
   }));
   $("homeBtn").addEventListener("click", goHub);
   $("hubBoardBtn").addEventListener("click", openBoard);
@@ -3074,6 +3707,7 @@
       return;
     }
     if (view === "ladder") { LL.key(e); return; }
+    if (view === "slots") { S.key(e); return; }
     if (view === "hub") return;
     if (k === "m" || k === "M") { toggleMusic(); return; }
     if (mode === "start" || mode === "over") {
@@ -3158,7 +3792,11 @@
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && (mode === "play" || mode === "clear")) togglePause();
   });
-  window.addEventListener("resize", () => { resize(); if (view === "ladder") LL.renderWords(); });
+  window.addEventListener("resize", () => {
+    resize();
+    if (view === "ladder") LL.renderWords();
+    if (view === "slots") S.size();
+  });
 
   // Name this phone's board everywhere it shows up
   $("boardTitle").textContent = `${GROUP_LABEL} leaderboard`;
