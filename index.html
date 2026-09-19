@@ -1021,7 +1021,8 @@
       <button class="primary slot-spin" id="slotSpin" type="button">Spin</button>
     </div>
     <button class="ladder-btn" id="slotRefill" type="button" hidden>Free chips +200</button>
-    <p class="slot-msg" id="slotMsg" aria-live="polite"><span id="slotFree"></span></p>
+    <p class="slot-msg" id="slotMsg" aria-live="polite"></p>
+    <p class="slot-msg" id="slotFree"></p>
     <div id="slotSave" hidden>
       <form class="save-form" id="slotSaveForm">
         <label for="slotName">Your name for the <span class="board-name">family board</span></label>
@@ -2580,8 +2581,15 @@
     goHub();
   }
 
-  let last = performance.now();
+  let last = performance.now(), loopErrors = 0;
   function loop(now) {
+    try { frame(now); } catch (e) {
+      // never let one bad frame stop the game
+      if (loopErrors++ < 3) console.error("frame error", e);
+    }
+    requestAnimationFrame(loop);
+  }
+  function frame(now) {
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
     if (mode !== "pause") {
@@ -2595,7 +2603,6 @@
     else B.draw();
     const lock = mode === "play" || mode === "clear" || mode === "ending";
     if (lock !== locked) { locked = lock; document.documentElement.classList.toggle("locked", lock); }
-    requestAnimationFrame(loop);
   }
   let locked = false;
 
@@ -3207,6 +3214,7 @@
       { t: "×6", mult: 6 }, { t: "JACKPOT", mult: 50 }, { t: "×20", mult: 20 }, { t: "×25", mult: 25 }
     ];
     const METER_MAX = 36;
+    const PLURALS = { cherry: "cherries", bar: "bars", gem: "gems", star: "stars", seven: "sevens", crown: "crowns" };
     const WEDGE_COLORS = ["#ef5b52", "#3d7be0", "#f2c94c", "#3ddc84", "#b15cff", "#ff8fb5"];
     const TAU = Math.PI * 2;
 
@@ -3347,7 +3355,7 @@
       if (mids[0] === mids[1] && mids[1] === mids[2]) {
         const sym = SYMBOLS[mids[0]];
         win = st.bet * sym.pay;
-        label = `Three ${sym.k}s! +${win.toLocaleString()}`;
+        label = `Three ${PLURALS[sym.k]}! +${win.toLocaleString()}`;
       } else {
         const cherries = mids.filter(i => SYMBOLS[i].k === "cherry").length;
         if (cherries >= 2) { win = st.bet; label = `Two cherries +${win.toLocaleString()}`; }
