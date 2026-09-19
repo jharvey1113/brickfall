@@ -371,6 +371,102 @@
     .toast.show { animation: none; opacity: 1; }
   }
 
+  /* ---------- Family leaderboard ---------- */
+  .lb-only { display: none; }
+  .lb-on .lb-only { display: inline-block; }
+  .save-form { display: flex; flex-direction: column; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+  .save-row { display: flex; gap: 6px; }
+  .save-row input {
+    font: inherit;
+    font-size: 16px;
+    width: 9em;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--panel-edge);
+    background: var(--well);
+    color: var(--ink);
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .save-row input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  .save-row .primary { padding: 6px 14px; font-size: 14px; }
+  .save-status { font-size: 13px; color: var(--ink) !important; max-width: 26ch; }
+  .save-status .link-btn { font-family: var(--body); font-size: 13px; padding: 0 2px; }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(5, 8, 25, 0.72);
+  }
+  .modal-card {
+    width: 100%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--panel-edge);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    line-height: 1.4;
+  }
+  .mode-blast .modal-card { background: #22318a; border-color: rgba(255, 255, 255, 0.2); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .modal-head h2 { margin: 0; font-family: "Fredoka", var(--body); font-weight: 700; font-size: 22px; }
+  .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .seg button {
+    background: transparent;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 6px 8px;
+    font-family: "Fredoka", var(--body);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .mode-blast .seg button { color: #c9d3ff; }
+  .seg button[aria-pressed="true"] { background: #ffd23f; color: #1f2d7a; }
+  .board-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .board-list li {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    font-family: "Fredoka", var(--body);
+    font-size: 16px;
+  }
+  .board-list li.me { background: rgba(255, 210, 63, 0.18); box-shadow: inset 0 0 0 1px rgba(255, 210, 63, 0.55); }
+  .board-list .rank { font-weight: 700; color: var(--muted); }
+  .board-list li:nth-child(1) .rank { color: #ffd23f; }
+  .board-list li:nth-child(2) .rank { color: #d5dcef; }
+  .board-list li:nth-child(3) .rank { color: #e8a060; }
+  .board-list .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .board-list .pts { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .board-status { margin: 0; text-align: center; font-size: 14px; color: var(--muted); }
+  .board-status:empty { display: none; }
+  .mode-blast .link-btn, .modal .link-btn {
+    font-family: "Fredoka", var(--body);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
   /* ---------- Brick Blast look ---------- */
   body.mode-blast {
     --ground: #2a3d9e;
@@ -527,6 +623,7 @@
             <button class="primary pink" id="playBlast" type="button">Play</button>
           </section>
         </div>
+        <button class="ghost-btn lb-only" id="menuBoardBtn" type="button">Family leaderboard</button>
       </div>
 
       <div class="overlay" id="pauseOverlay" hidden>
@@ -541,8 +638,17 @@
         <h2 id="overTitle">Game over</h2>
         <div class="big" id="finalScore">0</div>
         <p id="finalNote"></p>
+        <form class="save-form" id="saveForm" hidden>
+          <label for="playerName">Your name for the family board</label>
+          <div class="save-row">
+            <input id="playerName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
+            <button class="primary" type="submit">Save</button>
+          </div>
+        </form>
+        <p class="save-status" id="saveStatus" hidden></p>
         <div class="overlay-actions">
           <button class="primary" id="againBtn" type="button">Play again</button>
+          <button class="link-btn lb-only" id="overBoardBtn" type="button">Leaderboard</button>
           <button class="link-btn" id="overMenuBtn" type="button">Main menu</button>
         </div>
       </div>
@@ -596,8 +702,31 @@
   </div>
 </div>
 
+<div class="modal" id="boardModal" role="dialog" aria-modal="true" aria-labelledby="boardTitle" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="boardTitle">Family leaderboard</h2>
+      <button class="link-btn" id="boardClose" type="button">Close</button>
+    </div>
+    <div class="seg" id="boardModeSeg">
+      <button type="button" data-mode="classic" aria-pressed="false">Classic</button>
+      <button type="button" data-mode="blast" aria-pressed="true">Brick Blast</button>
+    </div>
+    <div class="seg" id="boardRangeSeg">
+      <button type="button" data-range="week" aria-pressed="true">This week</button>
+      <button type="button" data-range="all" aria-pressed="false">All time</button>
+    </div>
+    <ol class="board-list" id="boardList"></ol>
+    <p class="board-status" id="boardStatus"></p>
+  </div>
+</div>
+
 <script>
 (() => {
+  // Family leaderboard (Supabase). Both values are public by design; leave blank to turn the board off.
+  const LEADERBOARD_URL = "https://csnrueehdjxqfkbxqcxe.supabase.co";
+  const LEADERBOARD_KEY = "sb_publishable__Gjp9HLDRtXeJQ5XTuC_XA_Y8dF9UOY";
+
   const $ = id => document.getElementById(id);
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const store = {
@@ -1822,6 +1951,7 @@
       : `${lines} ${lines === 1 ? "line" : "lines"} cleared. Best: ${bests[game].toLocaleString()}`;
     $("overOverlay").hidden = false;
     updateStats();
+    offerScoreSave(game, score);
     $("againBtn").focus();
   }
 
@@ -1867,11 +1997,182 @@
   }
 
   // =====================================================================
+  // Family leaderboard
+  // =====================================================================
+  const lb = (() => {
+    // The Claude preview can't reach outside servers, so the board only runs on the hosted copy
+    const inPreview = /claude|anthropic/i.test(location.hostname);
+    const on = !!(LEADERBOARD_URL && LEADERBOARD_KEY) && !inPreview;
+    const base = LEADERBOARD_URL.replace(/\/+$/, "") + "/rest/v1/scores";
+    const headers = { apikey: LEADERBOARD_KEY, "Content-Type": "application/json" };
+
+    async function submit(mode, name, pts) {
+      const r = await fetch(base, {
+        method: "POST",
+        headers: { ...headers, Prefer: "return=minimal" },
+        body: JSON.stringify({ mode, name, score: pts })
+      });
+      if (!r.ok) throw new Error(`save failed (${r.status})`);
+    }
+
+    // Top 10 players, one row each (their best score)
+    async function top(mode, range) {
+      let q = `${base}?select=name,score&mode=eq.${mode}&order=score.desc&limit=300`;
+      if (range === "week") q += "&created_at=gte." + encodeURIComponent(new Date(Date.now() - 7 * 864e5).toISOString());
+      const r = await fetch(q, { headers });
+      if (!r.ok) throw new Error(`load failed (${r.status})`);
+      const seen = new Set(), out = [];
+      for (const row of await r.json()) {
+        const key = row.name.trim().toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(row);
+        if (out.length === 10) break;
+      }
+      return out;
+    }
+    return { on, submit, top };
+  })();
+
+  const sameName = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
+  const playerName = () => (store.get("brickfall-name") || "").trim();
+  let pendingScore = null;
+
+  function setSaveStatus(text, withChange) {
+    const el = $("saveStatus");
+    el.textContent = text;
+    if (withChange) {
+      el.append(" ");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "link-btn";
+      btn.textContent = "Change name";
+      btn.addEventListener("click", () => {
+        $("saveStatus").hidden = true;
+        $("saveForm").hidden = false;
+        $("playerName").value = playerName();
+        $("playerName").focus();
+      });
+      el.append(btn);
+    }
+    el.hidden = false;
+  }
+
+  async function saveScore(name, mode, pts) {
+    $("saveForm").hidden = true;
+    setSaveStatus("Saving to the family board…");
+    try {
+      await lb.submit(mode, name, pts);
+      let msg = "Saved to the family board.";
+      try {
+        const rows = await lb.top(mode, "week");
+        const i = rows.findIndex(r => sameName(r.name, name));
+        if (i >= 0) msg = rows[i].score === pts ? `Saved! You're #${i + 1} this week.` : `Saved! Your best this week is #${i + 1}.`;
+      } catch (e) {}
+      setSaveStatus(`${msg} Playing as ${name}.`, true);
+    } catch (e) {
+      pendingScore = { mode, pts };
+      setSaveStatus("Couldn't save this score. Check your connection, then tap Save.");
+      $("saveForm").hidden = false;
+      $("playerName").value = name;
+    }
+  }
+
+  function offerScoreSave(mode, pts) {
+    $("saveForm").hidden = true;
+    $("saveStatus").hidden = true;
+    pendingScore = null;
+    if (!lb.on || pts <= 0) return;
+    const name = playerName();
+    if (name) { saveScore(name, mode, pts); return; }
+    pendingScore = { mode, pts };
+    $("playerName").value = "";
+    $("saveForm").hidden = false;
+  }
+
+  $("saveForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("playerName").value.trim().slice(0, 16);
+    if (!name) { $("playerName").focus(); return; }
+    store.set("brickfall-name", name);
+    $("playerName").blur();
+    if (pendingScore) {
+      const { mode, pts } = pendingScore;
+      pendingScore = null;
+      saveScore(name, mode, pts);
+    } else {
+      $("saveForm").hidden = true;
+      setSaveStatus(`Got it. Your next game saves as ${name}.`, true);
+    }
+  });
+
+  let boardMode = "blast", boardRange = "week", boardReq = 0, boardOpener = null;
+
+  function syncSeg() {
+    document.querySelectorAll("#boardModeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === boardMode)));
+    document.querySelectorAll("#boardRangeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.range === boardRange)));
+  }
+
+  async function renderBoard() {
+    const req = ++boardReq;
+    const list = $("boardList"), status = $("boardStatus");
+    list.replaceChildren();
+    status.textContent = "Loading…";
+    try {
+      const rows = await lb.top(boardMode, boardRange);
+      if (req !== boardReq) return;
+      const me = playerName();
+      rows.forEach((r, i) => {
+        const li = document.createElement("li");
+        if (me && sameName(r.name, me)) li.className = "me";
+        const rank = document.createElement("span"); rank.className = "rank"; rank.textContent = i + 1;
+        const who = document.createElement("span"); who.className = "who"; who.textContent = r.name;
+        const pts = document.createElement("span"); pts.className = "pts"; pts.textContent = r.score.toLocaleString();
+        li.append(rank, who, pts);
+        list.append(li);
+      });
+      status.textContent = rows.length ? "" : boardRange === "week" ? "No scores in the last 7 days yet. Go set one!" : "No scores yet. Be the first!";
+    } catch (e) {
+      if (req !== boardReq) return;
+      status.textContent = "Couldn't load the leaderboard. Check your connection and try again.";
+    }
+  }
+
+  function openBoard() {
+    boardOpener = document.activeElement;
+    boardMode = game;
+    syncSeg();
+    $("boardModal").hidden = false;
+    $("boardClose").focus();
+    renderBoard();
+  }
+  function closeBoard() {
+    $("boardModal").hidden = true;
+    if (boardOpener && boardOpener.focus) boardOpener.focus();
+  }
+
+  document.body.classList.toggle("lb-on", lb.on);
+  $("menuBoardBtn").addEventListener("click", openBoard);
+  $("overBoardBtn").addEventListener("click", openBoard);
+  $("boardClose").addEventListener("click", closeBoard);
+  $("boardModal").addEventListener("click", e => { if (e.target === $("boardModal")) closeBoard(); });
+  $("boardModeSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    boardMode = b.dataset.mode; syncSeg(); renderBoard();
+  });
+  $("boardRangeSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    boardRange = b.dataset.range; syncSeg(); renderBoard();
+  });
+
+  // =====================================================================
   // Input wiring
   // =====================================================================
   const GAME_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "];
   document.addEventListener("keydown", e => {
     const k = e.key;
+    if (!$("boardModal").hidden) { if (k === "Escape") closeBoard(); return; }
+    if (e.target instanceof HTMLInputElement) return;
     if (k === "m" || k === "M") { toggleMusic(); return; }
     if (mode === "start" || mode === "over") {
       if (k === "Enter" && document.activeElement?.tagName !== "BUTTON") { e.preventDefault(); startGame(); }
