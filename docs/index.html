@@ -551,6 +551,289 @@
   .blast-hint { display: none; margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.7); }
   @media (pointer: fine) { .mode-blast .blast-hint { display: block; } }
   @media (max-width: 719px) { #bigScore { font-size: 48px; } .crown { font-size: 22px; } }
+
+  /* ---------- Views: home screen, block games, Letter Ladder ---------- */
+  .hub, .ladder { display: none; }
+  .view-hub .hub, .view-ladder .ladder { display: flex; }
+  .view-hub .game, .view-hub .blast-score, .view-hub .blast-hint, .view-hub .gesture-hint,
+  .view-ladder .game, .view-ladder .blast-score, .view-ladder .blast-hint, .view-ladder .gesture-hint { display: none !important; }
+  .view-hub #homeBtn, .view-hub #pauseBtn, .view-ladder #pauseBtn { display: none; }
+
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0 !important;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 10px;
+  }
+  .icon-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #pauseBtn svg rect { fill: currentColor; stroke: none; }
+  .icon-btn .slash { display: none; }
+  .icon-btn[aria-pressed="false"] { text-decoration: none; opacity: 0.6; }
+  .icon-btn[aria-pressed="false"] .slash { display: inline; }
+  .mode-blast .icon-btn, .mode-ladder .icon-btn { border-radius: 999px; }
+
+  .hub { flex-direction: column; align-items: center; gap: 16px; width: 100%; padding-block: 12px 24px; }
+  .hub-tag {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hub-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; width: 100%; max-width: 640px; }
+  .hub-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 14px;
+    border-radius: 16px;
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+    transition: transform 0.12s;
+  }
+  .hub-tile:hover { transform: translateY(-2px); }
+  .hub-tile:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
+  .tile-classic { background: linear-gradient(160deg, #2a3566, #151c38); box-shadow: inset 0 0 0 1px #34407a, 0 4px 0 rgba(0, 0, 0, 0.35); }
+  .tile-blast { background: linear-gradient(160deg, #3d5bd0, #1f2d7a); }
+  .tile-ladder { background: linear-gradient(160deg, #22978e, #0f3f55); }
+  .tile-art { width: 84px; height: 62px; flex: none; }
+  .tile-name { font-family: "Fredoka", var(--body); font-weight: 700; font-size: 20px; line-height: 1.1; }
+  .tile-sub { font-size: 13px; opacity: 0.85; font-variant-numeric: tabular-nums; }
+  @media (max-width: 560px) {
+    .hub-grid { grid-template-columns: minmax(0, 1fr); max-width: 420px; }
+    .hub-tile {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: "art name" "art sub";
+      column-gap: 16px;
+      row-gap: 2px;
+      align-items: center;
+      text-align: left;
+      padding: 14px 16px;
+    }
+    .tile-art { grid-area: art; width: 72px; height: 54px; }
+    .tile-name { grid-area: name; align-self: end; font-size: 22px; }
+    .tile-sub { grid-area: sub; align-self: start; }
+  }
+
+  /* Stealable crowns */
+  .crown-news { width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 8px; }
+  .crown-news:empty { display: none; }
+  .crown-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px 10px 14px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255, 210, 63, 0.24), rgba(255, 210, 63, 0.08));
+    box-shadow: inset 0 0 0 1px rgba(255, 210, 63, 0.55);
+    color: #fff;
+    font-family: "Fredoka", var(--body);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.3;
+    animation: wordpop 0.6s ease-out;
+  }
+  .crown-note svg { width: 30px; height: 24px; flex: none; }
+  .crown-note span { flex: 1; }
+  .crown-note button { background: none; color: var(--muted); font-size: 22px; line-height: 1; padding: 2px 8px; }
+  .tile-king {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: "Fredoka", var(--body);
+    font-weight: 600;
+    font-size: 13px;
+    color: #ffd23f;
+    font-variant-numeric: tabular-nums;
+  }
+  .tile-king:empty { display: none; }
+  .tile-king svg { width: 17px; height: 14px; flex: none; }
+  @media (max-width: 560px) {
+    .hub-tile { grid-template-areas: "art name" "art sub" "art king"; }
+    .tile-king { grid-area: king; }
+  }
+  .mode-ladder header { justify-content: flex-end; }
+
+  /* Letter Ladder */
+  body.mode-ladder {
+    --ground: #145a63;
+    --muted: #b9e0dc;
+    background: linear-gradient(180deg, #1f8a82 0%, #145a63 45%, #0f3a4d 100%) fixed;
+  }
+  .mode-ladder .ghost-btn { background: rgba(255, 255, 255, 0.16); border-color: transparent; color: #fff; }
+  .mode-ladder .wordmark { display: none; }
+  .ladder { flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 440px; }
+  .ladder-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: 22px;
+    color: #fff;
+  }
+  .ladder-coins {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px 3px 4px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.22);
+    font-size: 17px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ladder-coins svg { width: 24px; height: 24px; }
+  .ladder-coins circle { fill: #ffd23f; }
+  .ladder-coins text { fill: #7a5200; font-family: "Fredoka", var(--body); }
+  .ladder-words {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 1), max-content);
+    justify-content: center;
+    gap: 8px 18px;
+    min-height: 60px;
+  }
+  .ld-word { display: flex; gap: 4px; }
+  .ld-word.pop { animation: wordpop 0.5s ease-out; }
+  .ld-box {
+    width: var(--box, 30px);
+    height: var(--box, 30px);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.14);
+    display: grid;
+    place-items: center;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: calc(var(--box, 30px) * 0.6);
+    color: #fff;
+  }
+  .ld-box.hinted { background: rgba(255, 255, 255, 0.32); }
+  .ld-word.found .ld-box { background: #fff; color: #0f3a4d; }
+  .ladder-current {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: 0.12em;
+    color: #fff;
+    cursor: pointer;
+  }
+  .ladder-current span { background: rgba(0, 0, 0, 0.25); border-radius: 10px; padding: 2px 10px 2px 14px; }
+  .ladder-current.shake span { animation: shake 0.35s; background: rgba(239, 91, 82, 0.45); }
+  .ladder-wheel {
+    position: relative;
+    width: min(290px, 76vw);
+    max-width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+    touch-action: none;
+  }
+  .ld-letter {
+    position: absolute;
+    width: 23%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #fff;
+    color: #0f3a4d;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: clamp(22px, 7vw, 32px);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+    touch-action: none;
+    transition: background 0.1s, transform 0.1s;
+    z-index: 1;
+  }
+  .ld-letter.on { background: #ffd23f; transform: translate(-50%, -50%) scale(1.08); }
+  .ladder-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .ladder-lines polyline { fill: none; stroke: #ffd23f; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
+  .ladder-enter {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #3ddc84;
+    color: #0b3d22;
+    font-size: 26px;
+    font-weight: 700;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+    z-index: 2;
+  }
+  .ladder-actions { display: flex; gap: 10px; }
+  .ladder-btn {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-family: "Fredoka", var(--body);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 8px 18px;
+    border-radius: 999px;
+  }
+  .ladder-msg { margin: 0; min-height: 20px; color: #e6fffb; font-size: 14px; text-align: center; }
+  .mode-ladder .modal-card { background: #145a63; border-color: rgba(255, 255, 255, 0.2); }
+  .mode-ladder .primary {
+    background: #ffd23f;
+    color: #0f3a4d;
+    box-shadow: 0 3px 0 #b38a12;
+    font-family: "Fredoka", var(--body);
+    border-radius: 999px;
+  }
+  .ld-done { align-items: center; text-align: center; }
+  .ld-done-note { margin: 0; color: var(--muted); }
+  .seg-3 { grid-template-columns: repeat(3, 1fr); }
+  @keyframes wordpop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  /* Cheers ("Sweet!", "Awesome!") */
+  .cheer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 26%;
+    z-index: 60;
+    text-align: center;
+    pointer-events: none;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: clamp(44px, 13vw, 72px);
+    line-height: 1;
+    opacity: 0;
+  }
+  .cheer span {
+    background: linear-gradient(180deg, #fffbd0 0%, #ffd23f 45%, #ff7ac3 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 0 #8a2a6e) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+  }
+  .cheer.go { animation: cheer 1.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  @keyframes cheer {
+    0%   { opacity: 0; transform: scale(0.3) rotate(-8deg); }
+    18%  { opacity: 1; transform: scale(1.15) rotate(3deg); }
+    30%  { transform: scale(1) rotate(0); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-30px) scale(1.05); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cheer.go { animation: cheerfade 1.25s; }
+    @keyframes cheerfade { 0%, 100% { opacity: 0; } 15%, 75% { opacity: 1; } }
+    .ld-word.pop, .ladder-current.shake span { animation: none; }
+  }
 </style>
 
 </head>
@@ -567,11 +850,77 @@
       <span id="bigBest" aria-label="Best score">0</span>
     </div>
     <div class="header-controls">
-      <button class="ghost-btn" id="musicBtn" type="button" aria-pressed="true">Music</button>
-      <button class="ghost-btn" id="sfxBtn" type="button" aria-pressed="true">Sound</button>
-      <button class="ghost-btn" id="pauseBtn" type="button">Pause</button>
+      <button class="ghost-btn icon-btn" id="homeBtn" type="button" aria-label="Home" title="Home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+      </button>
+      <button class="ghost-btn icon-btn" id="musicBtn" type="button" aria-pressed="true" aria-label="Music" title="Music (M)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg>
+      </button>
+      <button class="ghost-btn icon-btn" id="sfxBtn" type="button" aria-pressed="true" aria-label="Sound effects" title="Sound effects">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/><line class="slash" x1="3" y1="3" x2="21" y2="21"/></svg>
+      </button>
+      <button class="ghost-btn icon-btn" id="pauseBtn" type="button" aria-label="Pause" title="Pause (P)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+      </button>
     </div>
   </header>
+
+  <section class="hub" id="hub" aria-label="Games">
+    <div class="crown-news" id="crownNews" aria-live="polite"></div>
+    <p class="hub-tag">Pick a game</p>
+    <div class="hub-grid">
+      <button class="hub-tile tile-classic" type="button" data-go="classic">
+        <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
+          <rect x="8" y="4" width="12" height="12" rx="2" fill="#b16ff0"/><rect x="20" y="4" width="12" height="12" rx="2" fill="#b16ff0"/><rect x="32" y="4" width="12" height="12" rx="2" fill="#b16ff0"/><rect x="20" y="16" width="12" height="12" rx="2" fill="#b16ff0"/>
+          <rect x="4" y="30" width="12" height="12" rx="2" fill="#3fd0e0"/><rect x="16" y="30" width="12" height="12" rx="2" fill="#f2c94c"/><rect x="28" y="30" width="12" height="12" rx="2" fill="#f2c94c"/><rect x="40" y="30" width="12" height="12" rx="2" fill="#ef5b52"/>
+        </svg>
+        <span class="tile-name">Classic</span>
+        <span class="tile-sub" id="hubClassic">Falling blocks</span>
+        <span class="tile-king" id="kingClassic"></span>
+      </button>
+      <button class="hub-tile tile-blast" type="button" data-go="blast">
+        <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="12" rx="2" fill="#ff5a5f"/><rect x="18" y="2" width="12" height="12" rx="2" fill="#ff5a5f"/><rect x="30" y="2" width="12" height="12" rx="2" fill="#ffd23f"/><rect x="42" y="2" width="12" height="12" rx="2" fill="#ffd23f"/>
+          <rect x="6" y="16" width="12" height="12" rx="2" fill="#2ec4f1"/><rect x="30" y="16" width="12" height="12" rx="2" fill="#3ddc84"/><rect x="42" y="16" width="12" height="12" rx="2" fill="#3ddc84"/>
+          <rect x="6" y="30" width="12" height="12" rx="2" fill="#2ec4f1"/><rect x="18" y="30" width="12" height="12" rx="2" fill="#b15cff"/><rect x="30" y="30" width="12" height="12" rx="2" fill="#b15cff"/>
+        </svg>
+        <span class="tile-name">Brick Blast</span>
+        <span class="tile-sub" id="hubBlast">Drag &amp; clear</span>
+        <span class="tile-king" id="kingBlast"></span>
+      </button>
+      <button class="hub-tile tile-ladder" type="button" data-go="ladder">
+        <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
+          <circle cx="30" cy="22" r="20" fill="rgba(255,255,255,0.18)"/>
+          <circle cx="30" cy="9" r="7" fill="#fff"/><circle cx="42" cy="28" r="7" fill="#fff"/><circle cx="18" cy="28" r="7" fill="#fff"/>
+          <text x="30" y="12.5" text-anchor="middle" font-size="10" font-weight="700" fill="#0f3a4d" font-family="Fredoka, sans-serif">C</text>
+          <text x="42" y="31.5" text-anchor="middle" font-size="10" font-weight="700" fill="#0f3a4d" font-family="Fredoka, sans-serif">A</text>
+          <text x="18" y="31.5" text-anchor="middle" font-size="10" font-weight="700" fill="#0f3a4d" font-family="Fredoka, sans-serif">T</text>
+        </svg>
+        <span class="tile-name">Letter Ladder</span>
+        <span class="tile-sub" id="hubLadder">Find the words</span>
+        <span class="tile-king" id="kingLadder"></span>
+      </button>
+    </div>
+    <button class="ghost-btn lb-only hub-board" id="hubBoardBtn" type="button">Family leaderboard</button>
+  </section>
+
+  <section class="ladder" id="ladder" aria-label="Letter Ladder">
+    <div class="ladder-top">
+      <span class="ladder-level" id="ldLevel">Level 1</span>
+      <span class="ladder-coins" title="Coins"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><text x="12" y="16.5" text-anchor="middle" font-size="12" font-weight="700">¢</text></svg><span id="ldCoins">0</span></span>
+    </div>
+    <div class="ladder-words" id="ldWords" aria-label="Words to find"></div>
+    <div class="ladder-current" id="ldCurrent" aria-live="polite"></div>
+    <div class="ladder-wheel" id="ldWheel">
+      <svg class="ladder-lines" id="ldLines" aria-hidden="true"><polyline id="ldPath" points=""/></svg>
+      <button class="ladder-enter" id="ldEnter" type="button" aria-label="Enter word" hidden>✓</button>
+    </div>
+    <div class="ladder-actions">
+      <button class="ladder-btn" id="ldShuffle" type="button">Shuffle</button>
+      <button class="ladder-btn" id="ldHint" type="button">Hint · 10¢</button>
+    </div>
+    <p class="ladder-msg" id="ldMsg" aria-live="polite"></p>
+  </section>
 
   <div class="blast-score">
     <div id="bigScore" aria-live="off">0</div>
@@ -599,10 +948,6 @@
       <div class="toast" id="toast" aria-live="polite"></div>
 
       <div class="overlay" id="startOverlay">
-        <div class="seg mode-tabs" id="modeTabs" aria-label="Game mode">
-          <button type="button" data-pick="classic" aria-pressed="true">Classic</button>
-          <button type="button" data-pick="blast" aria-pressed="false">Brick Blast</button>
-        </div>
         <h2 id="menuTitle">Classic</h2>
         <p class="menu-desc" id="menuDesc"></p>
         <p class="menu-how" id="menuHow"></p>
@@ -620,7 +965,7 @@
         <h2>Paused</h2>
         <div class="overlay-actions">
           <button class="primary" id="resumeBtn" type="button">Resume</button>
-          <button class="link-btn" id="pauseMenuBtn" type="button">Main menu</button>
+          <button class="link-btn" id="pauseMenuBtn" type="button">Home</button>
         </div>
       </div>
 
@@ -639,7 +984,7 @@
         <div class="overlay-actions">
           <button class="primary" id="againBtn" type="button">Play again</button>
           <button class="link-btn lb-only" id="overBoardBtn" type="button">Leaderboard</button>
-          <button class="link-btn" id="overMenuBtn" type="button">Main menu</button>
+          <button class="link-btn" id="overMenuBtn" type="button">Home</button>
         </div>
       </div>
     </div>
@@ -690,9 +1035,10 @@
       <h2 id="boardTitle">Family leaderboard</h2>
       <button class="link-btn" id="boardClose" type="button">Close</button>
     </div>
-    <div class="seg" id="boardModeSeg">
+    <div class="seg seg-3" id="boardModeSeg">
       <button type="button" data-mode="classic" aria-pressed="false">Classic</button>
-      <button type="button" data-mode="blast" aria-pressed="true">Brick Blast</button>
+      <button type="button" data-mode="blast" aria-pressed="true">Blast</button>
+      <button type="button" data-mode="ladder" aria-pressed="false">Ladder</button>
     </div>
     <div class="seg" id="boardRangeSeg">
       <button type="button" data-range="week" aria-pressed="true">This week</button>
@@ -703,11 +1049,35 @@
   </div>
 </div>
 
+<div class="modal" id="ldDone" role="dialog" aria-modal="true" aria-labelledby="ldDoneTitle" hidden>
+  <div class="modal-card ld-done">
+    <h2 id="ldDoneTitle">Level complete!</h2>
+    <p class="ld-done-note" id="ldDoneNote"></p>
+    <form class="save-form" id="ldNameForm" hidden>
+      <label for="ldName">Your name for the family board</label>
+      <div class="save-row">
+        <input id="ldName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
+        <button class="primary" type="submit">Save</button>
+      </div>
+    </form>
+    <p class="save-status" id="ldSaveNote" hidden></p>
+    <button class="primary big-play" id="ldNext" type="button">Next level</button>
+  </div>
+</div>
+
+<div class="cheer" id="cheer" aria-hidden="true"></div>
+
 <script>
 (() => {
   // Family leaderboard (Supabase). Both values are public by design; leave blank to turn the board off.
   const LEADERBOARD_URL = "https://csnrueehdjxqfkbxqcxe.supabase.co";
   const LEADERBOARD_KEY = "sb_publishable__Gjp9HLDRtXeJQ5XTuC_XA_Y8dF9UOY";
+
+  // Letter Ladder words and levels, generated by tools/gen-ladder.js (don't edit by hand)
+  /* LADDER-DATA:START */
+  const LADDER_WORDS = "ABILITY ABLE ABOUT ABOVE ACCOUNT ACE ACHIEVE ACID ACROBAT ACT ACTION ACTIVE ACTOR ACTUAL ACUTE ADAPT ADD ADDRESS ADJUST ADMIT ADOPT ADULT ADVANCE ADVICE AFRAID AFTER AGAIN AGE AGED AGENDA AGENT AGO AGREE AHEAD AID AIDE AIM AIMS AIR AIRLINE AIRPORT AIRY AJAR ALARM ALBUM ALE ALERT ALIEN ALIGN ALIKE ALIVE ALL ALLEY ALLOW ALMOST ALONE ALONG ALOUD ALSO ALTER ALTO ALWAYS AMAZE AMAZING AMID AMONG AMOUNT AMPLE ANCIENT AND ANGEL ANGER ANGLE ANGRY ANIMAL ANKLE ANOTHER ANSWER ANT ANTE ANTS ANXIOUS ANY ANYONE APART APE APES APPEAR APPLE APPLY APRON APT ARC ARCH ARCHER ARE AREA ARENA ARGUE ARISE ARK ARM ARMOR ARMS ARMY AROMA AROUND ARRANGE ARRIVAL ARRIVE ARROW ART ARTICLE ARTIST ARTS ARTWORK ASH ASIDE ASK ASLEEP ATE ATHLETE ATLAS ATOM ATTACK ATTEMPT ATTEND ATTIC ATTRACT AUCTION AUDIO AUNT AUTO AUTUMN AVENUE AVERAGE AVID AVOID AWAKE AWARD AWARE AWAY AWE AWESOME AWFUL AXE AXES AXIS BABY BACK BACON BAD BADGE BAG BAKE BAKER BALANCE BALD BALL BALLET BAN BANANA BAND BANDAGE BANG BANK BAR BARE BARGAIN BARK BARN BARREL BARRIER BASE BASH BASIC BASIN BASIS BASKET BAT BATCH BATH BATHTUB BATS BATTERY BATTLE BAY BEACH BEACON BEAD BEAK BEAM BEAN BEAR BEARD BEAST BEAT BEAUTY BECOME BED BEDROOM BEDS BEE BEEF BEEN BEES BEET BEFORE BEG BEGIN BEHAVE BEHIND BEING BELL BELONG BELOW BELT BENCH BEND BENT BERRY BEST BET BETS BETTER BEYOND BIB BICYCLE BID BIG BIKE BILL BIN BIND BIRD BIRTH BISCUIT BIT BITE BITS BLACK BLADE BLAME BLAND BLANK BLANKET BLAST BLAZE BLEND BLESS BLEW BLIND BLINK BLISS BLOB BLOCK BLOOM BLOSSOM BLOT BLOW BLOWN BLUE BLUES BLUNT BLUR BLUSH BOA BOAR BOARD BOAST BOAT BODY BOG BOIL BOLD BOLT BOND BONE BONUS BOO BOOK BOOM BOOST BOOT BOOTH BOOTS BORE BORED BORN BOSS BOTH BOTTLE BOTTOM BOUNCE BOUND BOUQUET BOW BOWL BOWS BOX BOY BOYS BRACKET BRAG BRAIN BRAKE BRAN BRANCH BRAND BRASS BRAVE BREAD BREAK BREATH BRED BREED BREEZE BREW BRICK BRIDE BRIDGE BRIEF BRIGHT BRIM BRING BRISK BRISTLE BROAD BROKE BROKEN BRONZE BROOK BROOM BROTHER BROWN BRUSH BUBBLE BUCKET BUD BUDDY BUDGET BUFFALO BUG BUILD BUILDER BUILT BULB BULK BULL BUMP BUN BUNCH BUNDLE BUNK BUNNY BUNS BURN BURST BUS BUSH BUSY BUT BUTTER BUTTON BUY BUZZ BYE CAB CABIN CABINET CABLE CACTUS CAFE CAGE CAKE CALF CALL CALM CAME CAMEL CAMERA CAMP CAMPING CAN CANDLE CANDLES CANDY CANE CANNON CANOE CANS CANVAS CAP CAPE CAPITAL CAPS CAPTAIN CAR CARAMEL CARD CARDS CARE CARGO CAROL CARPET CARROT CARRY CARS CART CARTOON CARVE CASE CASH CAST CASTER CASTLE CASUAL CAT CATALOG CATCH CATS CATTLE CAUGHT CAUSE CAVE CEDAR CEILING CELERY CELL CELLAR CENT CENTER CENTRAL CENTURY CEREAL CERTAIN CHAIN CHAIR CHALK CHAMBER CHAMP CHANCE CHANGE CHANNEL CHAPTER CHARGE CHARITY CHARM CHART CHASE CHAT CHEAP CHECK CHEEK CHEER CHEESE CHEF CHERRY CHESS CHEST CHEW CHICK CHICKEN CHIEF CHILD CHILL CHIMNEY CHIMP CHIN CHIP CHIRP CHOICE CHOIR CHOOSE CHOP CHORD CHORE CHORUS CHOSE CHUNK CIDER CIRCLE CITIZEN CITY CLAD CLAIM CLAM CLAMP CLAP CLASH CLASP CLASS CLASSIC CLAW CLAY CLEAN CLEANER CLEAR CLERK CLEVER CLICK CLIFF CLIMATE CLIMB CLING CLIP CLOAK CLOCK CLOG CLOSE CLOSET CLOT CLOTH CLOTHES CLOUD CLOWN CLUB CLUE CLUSTER COACH COAL COAST COASTAL COASTER COAT COBRA COBWEB COCOA COD CODE COFFEE COG COIL COIN COLD COLLAR COLLECT COLLEGE COLONY COLOR COLT COLUMN COMB COME COMEDY COMET COMFORT COMIC COMMAND COMMON COMPANY COMPASS COMPLEX CON CONCERT CONE CONNECT CONTAIN CONTENT CONTEST CONTROL CONVERT COOK COOKING COOL COPE COPPER COPY CORAL CORD CORE CORK CORN CORNER CORRECT COST COSTUME COT COTS COTTAGE COTTON COUCH COUGH COULD COUNT COUNTER COUNTRY COUNTY COUPLE COURAGE COURSE COURT COUSIN COVER COW COY COZY CRAB CRACK CRADLE CRAFT CRANE CRASH CRATE CRATES CRAWL CRAZY CREAM CREATE CREDIT CREEK CREST CREW CRIB CRISP CROP CROW CROWD CROWN CRUMB CRUNCH CRUSH CRUST CRY CRYSTAL CUB CUBE CUBS CUDDLE CUE CUFF CULTURE CUP CUPCAKE CUPS CURB CURE CURL CURTAIN CURVE CUSHION CUSTARD CUSTOM CUT CUTE CUTS CYCLE DAB DAD DAILY DAIRY DAISIES DAISY DAM DAMAGE DAMP DANCE DANCER DANCERS DANGER DARE DARED DARING DARK DARN DART DASH DATA DATE DAWN DAY DAYS DEAD DEAF DEAL DEALER DEALT DEAR DEBATE DEBT DECADE DECAL DECAY DECIDE DECIMAL DECK DEED DEEP DEER DEFEND DEGREE DELAY DELIVER DELTA DEMAND DEN DENS DENSE DENSITY DENT DEPOT DEPTH DESERT DESIGN DESK DESSERT DETAIL DETECT DEVICE DEW DIAL DIAMOND DIARY DICE DID DIE DIET DIG DIGITAL DIM DIME DIN DINE DINER DINNER DIP DIRECT DIRT DIRTY DISC DISH DITCH DIVE DIVER DIVIDE DIZZY DOCK DOCTOR DODGE DOE DOES DOG DOGS DOING DOLL DOLLAR DOLPHIN DOME DON DONE DONKEY DONUT DOOR DOSE DOT DOTS DOUBLE DOUBT DOUGH DOVE DOWN DOZE DOZEN DRAFT DRAG DRAGON DRAIN DRAMA DRANK DRAPE DRAW DRAWER DRAWING DRAWN DREAM DRESS DRESSER DREW DRIBBLE DRIED DRIFT DRILL DRINK DRIP DRIVE DRIVER DRONE DROP DROVE DRUM DRY DRYER DUAL DUCK DUD DUE DUES DUET DUG DULL DUNE DURING DUSK DUST DUTY DWARF DYE EACH EAGER EAGLE EAR EARLY EARN EARNEST EARS EARTH EASE EASEL EASILY EAST EASTERN EASY EAT EATEN EATING EATS EBB ECHO ECONOMY EDGE EDIT EDITOR EFFORT EGG EGGS EGO EIGHT EIGHTY EITHER ELBOW ELDER ELECT ELEMENT ELEVATE ELEVEN ELF ELK ELM ELSE EMERALD EMIT EMPIRE EMPTY EMU ENABLE END ENDING ENDLESS ENDS ENEMY ENERGY ENGINE ENJOY ENLARGE ENLIST ENOUGH ENTER ENTIRE ENTRY ENVY EPISODE EQUAL ERA ERROR ESCAPE ESSAY ESTATE EVE EVEN EVENING EVENT EVER EVERY EWE EXACT EXAM EXAMPLE EXCEPT EXCITED EXIST EXIT EXPERT EXPLAIN EXPLORE EXPRESS EXTRA EXTREME EYE EYES FABLE FABRIC FACE FACT FACTOR FACTORY FADE FAIL FAILURE FAINT FAIR FAIRLY FAIRY FAITH FAKE FALL FALSE FAME FAMILY FAMOUS FAN FANCY FANS FANTASY FAR FARE FARM FARMER FARMERS FASHION FAST FAT FATE FATHER FAULT FAVOR FAWN FAX FEAR FEAST FEAT FEATHER FED FEE FEED FEEL FEELING FEES FEET FELL FELLOW FELT FENCE FERN FETCH FEVER FEW FIBER FICTION FIELD FIFTEEN FIFTH FIFTY FIG FIGHT FIGURE FILE FILL FILM FIN FINAL FINANCE FIND FINDER FINE FINGER FINISH FIR FIRE FIRM FIRST FISH FISHING FIST FIT FITNESS FITS FIVE FIX FLAG FLAKE FLAME FLANNEL FLAP FLASH FLASK FLAT FLAW FLEA FLED FLEET FLEW FLIES FLIGHT FLINT FLIP FLOAT FLOCK FLOOD FLOOR FLOUR FLOW FLOWER FLU FLUID FLUTE FLY FOAL FOAM FOCUS FOE FOES FOG FOGGY FOLD FOLK FOLLOW FOND FONT FOOD FOOL FOOT FOR FORCE FOREIGN FOREST FOREVER FORGE FORGET FORK FORM FORMAL FORT FORTH FORTUNE FORTY FORWARD FOSSIL FOUL FOUND FOUNDER FOUR FOWL FOX FRAME FREE FREEDOM FREEZER FRESH FRIED FRIEND FRIENDS FROG FROM FROST FROSTED FROZE FROZEN FRUIT FRY FUDGE FUEL FULL FULLY FUME FUN FUND FUNNY FUR FURTHER FUSS FUTURE GAG GAIN GALAXY GALE GALLERY GAME GAP GAPS GARAGE GARBAGE GARDEN GARLIC GAS GATE GATHER GAUGE GAVE GAZE GEAR GEL GEM GEMS GENERAL GENTLE GENUINE GESTURE GET GHOST GIANT GIFT GIGGLE GINGER GIRAFFE GIRL GIVE GIVEN GLAD GLASS GLASSES GLEAM GLEE GLIDE GLIDER GLISTEN GLOBE GLOOM GLORY GLOVE GLOW GLUE GNAW GOAL GOAT GOES GOING GOLD GOLDEN GOLF GONE GOOD GOOSE GORILLA GOSSIP GOT GOWN GRAB GRACE GRADE GRAIN GRAM GRAMMAR GRAND GRANITE GRANT GRAPE GRAPH GRASP GRASS GRAVE GRAVITY GRAVY GRAY GREAT GREATLY GREED GREEN GREET GREW GRID GRILL GRIN GRIND GRIP GRIT GROAN GROCERY GROOM GROUND GROUP GROVE GROW GROWL GROWN GROWTH GUARD GUESS GUEST GUIDE GUITAR GULF GULL GULP GUM GUST GUT GUY GYM HABIT HABITAT HAD HAIL HAIR HAIRCUT HAIRY HALF HALL HALT HAM HAMMER HAMSTER HAND HANDFUL HANDLE HANDY HANG HAPPEN HAPPY HARBOR HARD HARDEST HARDY HARE HARM HARMONY HARP HARSH HARVEST HAS HASTE HAT HATCH HATE HAUL HAUNT HAVE HAVEN HAWK HAY HAZE HAZY HEAD HEAL HEALTH HEALTHY HEAP HEAR HEARD HEARING HEART HEAT HEATER HEATING HEAVY HEDGE HEEL HEIGHT HELD HELLO HELM HELMET HELP HELPFUL HEM HEN HER HERB HERBS HERD HERE HERO HERS HERSELF HID HIDDEN HIDE HIGH HIGHWAY HIKE HIKING HILL HILLS HIM HIMSELF HINGE HINT HIP HIPPO HIPS HIRE HIS HISTORY HIT HITS HIVE HOAX HOBBY HOCKEY HOG HOLD HOLE HOLIDAY HOME HONEST HONEY HONOR HOOD HOOF HOOK HOOP HOP HOPE HORIZON HORN HORSE HOSE HOST HOT HOTEL HOUND HOUR HOUSE HOUSING HOVER HOW HOWL HUB HUE HUG HUGE HUGS HULL HUM HUMAN HUMID HUMOR HUMP HUNDRED HUNG HUNT HUNTER HUNTING HURRY HURT HUSBAND HUSH HUT HUTS ICE ICEBERG ICICLE ICON ICY IDEA IDEAL IDLE ILL IMAGE IMAGINE IMP IMPROVE INCH INCLUDE INDEX INK INN INNER INPUT INSECTS INSTANT INTO ION IRON ISLAND ISSUE ITEM ITS ITSELF IVORY IVY JAB JACKET JADE JAM JAMS JAR JARS JAW JAWS JAY JAZZ JEEP JELLY JERSEY JEST JET JETS JEWEL JIG JIGSAW JOB JOBS JOG JOIN JOINT JOKE JOKER JOLLY JOLT JOT JOURNAL JOURNEY JOY JUDGE JUG JUICE JUICY JUMBO JUMP JUNGLE JUNIOR JUNK JUST JUSTICE KAYAK KEEN KEEP KEG KEPT KETTLE KEY KEYS KICK KID KIDS KIN KIND KING KISS KIT KITCHEN KITE KITS KITTEN KITTENS KNACK KNEAD KNEE KNEEL KNEW KNIFE KNIT KNOB KNOCK KNOT KNOW KNOWN KOALA LAB LABEL LABOR LACE LACK LAD LADDER LADY LAG LAID LAIR LAKE LAMB LAMP LAND LANE LANTERN LAP LAPS LARGE LARGEST LASER LAST LASTED LASTING LATCH LATE LATER LAUGH LAUNCH LAUNDRY LAW LAWN LAWS LAWYER LAY LAYER LAZY LEAD LEADER LEAF LEAGUE LEAK LEAN LEAP LEARN LEARNER LEASE LEAST LEATHER LEAVE LECTURE LED LEDGE LEFT LEG LEGS LEISURE LEMON LEND LENS LENT LESS LESSON LET LETS LETTER LEVEL LEVER LIAR LIBRARY LICENSE LICK LID LIDS LIE LIED LIES LIFE LIFT LIGHT LIKE LIKELY LILAC LIMB LIME LIMIT LIMITED LIMP LINE LINEN LINER LINK LINT LION LIONS LIP LIPS LIQUID LIST LISTEN LIT LITER LITTLE LIVE LIVED LIVER LIZARD LLAMA LOAD LOAF LOAN LOBBY LOBE LOBSTER LOCAL LOCATE LOCK LOCKER LODGE LOFT LOG LOGIC LOGO LOGS LONE LONELY LONG LOOK LOOP LOOSE LOSE LOSS LOST LOT LOTS LOTUS LOUD LOVE LOVELY LOW LOYAL LUCK LUCKY LUMP LUNAR LUNCH LUNG LURE LUSH MACHINE MAD MADE MAGIC MAGICAL MAGNETS MAIL MAILBOX MAIN MAJOR MAKE MAKER MALE MALL MAMMOTH MAN MANAGER MANE MANGO MANNER MANOR MANSION MANY MAP MAPLE MAPS MARBLE MARCH MARE MARINES MARK MARKET MARSH MASH MASK MASS MASSIVE MAST MASTER MAT MATCH MATE MATH MATS MATTER MAY MAYBE MAYOR MAZE MEADOW MEAL MEAN MEANING MEANT MEASURE MEAT MEDAL MEDIA MEDICAL MEDIUM MEET MEETING MELODY MELON MELT MEMBER MEMO MEMORY MEN MEND MENU MEOW MERCY MERIT MERMAID MERRY MESH MESS MESSAGE MET METAL METEOR METER METHOD MICE MID MIDDLE MIGHT MILD MILE MILK MILL MILLION MIMIC MIND MINE MINERAL MINOR MINT MINUS MINUTE MINUTES MIRACLE MIRROR MISS MISSION MIST MITE MITT MITTEN MIX MIXED MIXTURE MOAN MOAT MOB MOCK MODE MODEL MODERN MOIST MOLD MOLE MOM MOMENT MONEY MONITOR MONKEY MONSTER MONTH MOOD MOON MOOSE MOP MORNING MOSS MOST MOSTLY MOTH MOTHER MOTION MOTOR MOTTO MOUND MOUNT MOUSE MOUTH MOVE MOVIE MUCH MUD MUDDY MUG MUGS MULE MURAL MUSCLE MUSEUM MUSH MUSIC MUST MUSTARD MUTE MYSELF MYSTERY MYTH NAG NAIL NAME NAP NARROW NATURAL NATURE NAVY NEAR NEARBY NEAREST NEARLY NEAT NECK NEED NEEDLE NEITHER NEPHEW NEST NET NETS NETWORK NEUTRAL NEVER NEW NEWLY NEWS NEWT NEXT NICE NICKEL NIGHT NIL NINE NINJA NIP NOBLE NOBODY NOD NODS NOISE NONE NOON NOR NORMAL NORTH NOSE NOT NOTCH NOTE NOTED NOTES NOTHING NOTICE NOUN NOVEL NOW NUMBER NUN NURSE NURSERY NUT NUTS OAK OAR OASIS OAT OATH OATMEAL OATS OBEY OBJECT OBVIOUS OCEAN OCTOPUS ODD ODDS ODOR OFF OFFER OFFICE OFFICER OFTEN OIL OILS OKAY OLD OLIVE OMEN ONCE ONE ONES ONION ONLINE ONLY ONSET ONTO OPEN OPENING OPERA OPERATE OPINION OPT ORANGE ORB ORBIT ORCHARD ORDER ORE ORGAN ORGANIC OSTRICH OTHER OTTER OUNCE OUR OUT OUTDOOR OUTER OUTSIDE OVAL OVEN OVER OVERALL OWE OWED OWES OWL OWLS OWN OWNER OWNS OYSTER PACE PACK PACKET PACT PAD PADDLE PADS PAGE PAID PAIL PAIN PAINT PAINTED PAINTER PAIR PAJAMAS PAL PALACE PALE PALM PALS PAN PANCAKE PANDA PANE PANEL PANIC PANS PANTHER PAPER PAR PARENT PARENTS PARK PARROT PARSE PARSLEY PART PARTIES PARTNER PARTY PASS PASSAGE PAST PASTA PASTE PASTEL PASTRY PAT PATCH PATH PATIENT PATTERN PAUSE PAVE PAW PAWS PAY PAYMENT PEA PEACE PEACH PEACOCK PEAK PEANUT PEANUTS PEAR PEARL PEARS PEAS PEBBLE PECK PEDAL PEEL PEER PEG PEGS PELICAN PEN PENCIL PENGUIN PENNY PENS PEOPLE PEP PEPPER PER PERCENT PERCH PERFECT PERFORM PERHAPS PERIOD PERSON PEST PET PETALS PETS PHONE PHOTO PIANO PICK PICKLE PICTURE PIE PIECE PIER PIES PIG PIGS PILE PILGRIM PILL PILLOW PILOT PIN PINCH PINE PINES PINK PINS PINT PIONEER PIPE PIRATE PIRATES PIT PITCH PITCHER PITS PITY PIZZA PLACE PLAIN PLAN PLANE PLANET PLANK PLANT PLASTER PLASTIC PLATE PLATES PLAY PLAYERS PLAZA PLEA PLEAD PLEASED PLENTY PLOT PLOW PLUCK PLUG PLUM PLUMBER PLUMP PLUS PLUSH POCKET POD POEM POET POETRY POINT POLAR POLE POLICE POLL POND PONY POOL POOR POP POPCORN POPS POPULAR PORCH PORE PORK PORT PORTION POSE POST POSTURE POT POTATO POTS POTTERY POUCH POUND POUR POWDER POWER PRAIRIE PRAY PREDICT PREFER PREPARE PRESENT PRESS PRETEND PRETTY PREVENT PREY PRICE PRIDE PRIEST PRIMARY PRIME PRINCE PRINT PRINTER PRIZE PRO PROBE PROBLEM PROCESS PRODUCE PRODUCT PROFIT PROGRAM PROJECT PROMISE PROOF PROP PROTECT PROTEIN PROUD PROVE PROVIDE PRUNE PRY PUB PUBLIC PUBLISH PUCK PUDDING PUDDLE PUFF PUG PULL PULP PULSE PUMP PUMPKIN PUN PUNCH PUP PUPIL PUPPET PUPPY PUPS PURE PURPLE PURSE PUSH PUT PUTS PUZZLE PYRAMID QUACK QUALITY QUARTER QUEEN QUEST QUICK QUICKLY QUIET QUILT QUIT QUITE QUIZ QUOTE RABBIT RABBITS RACCOON RACE RACK RACKET RADAR RADIO RADISH RAFT RAG RAGE RAGS RAID RAIL RAILWAY RAIN RAINBOW RAINY RAISE RAISIN RAISING RAKE RALLY RAM RAMP RAN RANCH RANG RANGE RANK RAP RAPID RAPIDLY RARE RARELY RASH RAT RATE RATHER RATIO RATS RAVEN RAW RAY RAYS REACH REACT REACTS READ READER READING READS READY REAL REALITY REALIZE REALM REAP REAR REASON REBEL RECAST RECEIPT RECENT RECITAL RECORD RECOVER RED REDUCE REED REEF REEL REGION REGULAR REIN RELATED RELAX RELAY RELEASE RELIEF RELY REMAIN REMAINS REMOTE RENT REPAIR REPEAT REPLACE REPLAYS REPLY REPORT REQUEST RESCUE RESERVE RESIST RESPECT REST RESTING RESTORE RESULT RETIRED RETURN REVEAL REWARD RHYTHM RIB RIBBON RICE RICH RID RIDE RIDER RIDGE RIFT RIG RIGHT RIGID RIM RING RINK RINSE RIOT RIP RIPE RIPEN RISE RISK RISKY RIVAL RIVER ROAD ROAM ROAR ROAST ROB ROBE ROBIN ROBOT ROCK ROCKET ROCKY ROD RODE RODEO ROLE ROLL ROOF ROOM ROOST ROOSTER ROOT ROPE ROSE ROSY ROT ROUGH ROUND ROUTE ROUTINE ROW ROWS ROYAL RUB RUBBER RUBS RUBY RUDE RUG RUGS RUIN RULE RULER RUMOR RUN RUNG RUNNING RUNS RURAL RUSH RUST RUSTY RUT RYE SACK SAD SADDLE SAFE SAFETY SAG SAGA SAGE SAID SAIL SAILING SAILOR SALAD SALE SALMON SALON SALT SALTED SALTING SALTY SAME SAMPLE SAND SANDALS SANDY SANG SANK SAP SARDINE SAT SATISFY SAUCE SAUSAGE SAVE SAW SAY SAYS SCALE SCAN SCAR SCARF SCATTER SCENE SCENERY SCENT SCHOOL SCIENCE SCONE SCOOP SCOOTER SCOPE SCORE SCOUT SCRAP SCREAM SCREEN SCREW SCRUB SEA SEAL SEAM SEARCH SEASON SEAT SECOND SECRET SECTION SECURE SEE SEED SEEK SEEM SEEN SEES SELECT SELF SELL SEMINAR SENATOR SEND SENIOR SENSE SENT SERIES SERIOUS SERVE SERVICE SESSION SET SETS SETTING SETTLE SEVEN SEW SEWN SHADE SHADOW SHAKE SHALL SHAPE SHARE SHARK SHARP SHAVE SHAWL SHE SHEAR SHED SHEEP SHEET SHELF SHELL SHELTER SHERIFF SHIFT SHIMMER SHINE SHINY SHIP SHIRT SHOCK SHOE SHOP SHORE SHORT SHORTLY SHOT SHOUT SHOVE SHOW SHOWER SHOWERS SHOWN SHRUB SHUFFLE SHUT SHY SICK SIDE SIFT SIGH SIGHT SIGN SIGNAL SILENCE SILENT SILK SILLY SILVER SIMILAR SIMPLE SIN SINCE SINCERE SING SINGER SINGERS SINGLE SINK SIP SIPS SIR SIREN SISTER SIT SITE SIX SIXTY SIZE SKATE SKATING SKETCH SKI SKID SKILL SKIN SKIP SKIRT SKY SLAB SLAM SLAP SLATE SLED SLEEP SLENDER SLICE SLID SLIDE SLIGHT SLIM SLIME SLIP SLIT SLIVER SLOPE SLOT SLOTH SLOW SLUG SLY SMALL SMART SMELL SMILE SMOKE SMOOTH SNACK SNAIL SNAKE SNAP SNEAK SNIPE SNORE SNOW SNOWMAN SNOWY SOAK SOAP SOAR SOB SOCCER SOCIETY SOCK SOCKET SODA SOFA SOFT SOIL SOLAR SOLD SOLDIER SOLE SOLID SOLVE SOME SOMEONE SON SONG SOON SORE SORRY SORT SOUL SOUND SOUP SOUR SOUTH SOW SOY SPA SPACE SPADE SPARE SPARK SPARKLE SPEAK SPEAKER SPEAR SPECIAL SPEED SPELL SPEND SPICE SPICY SPIDER SPIKE SPILL SPIN SPINACH SPINE SPIRIT SPIT SPOKE SPONSOR SPOON SPORT SPOT SPOUT SPRAY SPRING SPRITE SPUN SPY SQUAD SQUARE SQUASH STAB STABLE STACK STADIUM STAFF STAGE STAIN STAIR STAKE STALE STALL STAMP STAND STAPLE STAR STARE START STATE STATION STATUE STAY STEADY STEAK STEAL STEAM STEEL STEEP STEER STEM STEP STEW STICK STIFF STILL STING STINGER STIR STITCH STOCK STOMACH STONE STOOD STOOL STOP STORAGE STORE STORK STORM STORY STOVE STRAIN STRANGE STRAW STREAM STRETCH STRIP STRIPE STRONG STUB STUCK STUDENT STUDIO STUDY STUFF STYLE SUB SUBJECT SUBMIT SUCCESS SUCH SUDDEN SUGAR SUGGEST SUIT SUITE SUM SUMMARY SUMMER SUMS SUN SUNG SUNK SUNNY SUPER SUPPLY SUPPORT SUPREME SURE SURELY SURF SURFACE SURGEON SURVEY SURVIVE SWAMP SWAN SWAP SWARM SWAY SWEATER SWEEP SWEET SWEPT SWIFT SWIM SWING SWITCH SWORD SYMBOL SYRUP SYSTEM TAB TABLE TABLET TACK TAG TAIL TAILOR TAKE TAKEN TALE TALENT TALES TALK TALL TALLY TAME TAN TANGO TANK TAP TAPE TAPS TAR TARGET TART TASK TASTE TAX TEA TEACH TEACHER TEAM TEAR TEARING TEARS TEAS TEE TEEN TEENAGE TEETH TELL TEMPLE TEMPO TEN TEND TENNIS TENOR TENS TENSE TENT TENTH TERM TEST TEXT TEXTURE THAN THANK THAT THAW THE THEATER THEM THEME THEN THERE THESE THEY THICK THIEF THIN THING THINK THIRD THIRTY THIS THORN THOSE THOUGHT THREAD THREADS THREE THREW THROAT THROW THUMB THUNDER TICK TICKET TIDE TIDY TIE TIED TIES TIGER TIGHT TILE TILL TILT TIMBER TIME TIMER TIN TINSEL TINT TINY TIP TIPS TIRE TIRED TISSUE TITLE TOAD TOAST TOASTER TODAY TOE TOES TOKEN TOLD TOMATO TOMB TON TONE TONES TONGUE TONIGHT TONS TOO TOOK TOOL TOOTH TOP TOPIC TOPS TORCH TORE TORN TORNADO TOSS TOT TOTAL TOUCH TOUGH TOUR TOURIST TOW TOWARD TOWEL TOWER TOWN TOY TOYS TRACE TRACK TRADE TRAFFIC TRAIL TRAIN TRAINER TRAINS TRAIT TRANSIT TRAP TRAVEL TRAVELS TRAY TREAD TREASON TREAT TREE TREETOP TREND TRIAL TRIBE TRICK TRIED TRIM TRIO TRIP TROOP TROT TROUBLE TROUT TRUCK TRUE TRULY TRUMPET TRUNK TRUST TRUTH TRY TUB TUBA TUBE TUCK TUG TULIP TUNA TUNE TUNER TUNNEL TURKEY TURN TURTLE TWELVE TWENTY TWICE TWIG TWIN TWINS TWIST TWO TYPE UNCLE UNDER UNIT UNITE UNITY UNKNOWN UNLESS UNTIL UNUSUAL UPDATE UPGRADE UPON UPPER UPRIGHT UPSET UPWARD URBAN URGE URN USE USED USEFUL USES USUAL VAIN VALLEY VAN VAPOR VARIETY VASE VAST VAT VAULT VEHICLE VEIL VEIN VELVET VENT VENTURE VERB VERSE VERSION VERY VEST VET VETERAN VETS VIA VIAL VICTORY VIDEO VIEW VILLAGE VINE VINTAGE VINYL VIOLIN VISA VISIBLE VISIT VISITOR VISUAL VITAL VITAMIN VIVID VOCAL VOICE VOID VOLCANO VOLUME VOTE VOTES VOW VOYAGE WADE WAFER WAG WAGE WAGON WAIST WAIT WAITER WAKE WALK WALL WALLETS WALRUS WAND WANDER WANT WAR WARD WARM WARMTH WARN WARRIOR WAS WASH WASP WASTE WATCH WATER WAVE WAVY WAX WAY WAYS WEAK WEAR WEARY WEATHER WEAVE WEB WEBS WEBSITE WED WEDDING WEDGE WEED WEEK WEEKEND WEEKLY WEIGH WEIGHT WELCOME WELL WENT WERE WEST WESTERN WET WHALE WHAT WHEAT WHEEL WHEN WHERE WHICH WHILE WHIP WHIRL WHISK WHISPER WHISTLE WHITE WHO WHOLE WHOSE WHY WIDE WIDEN WIDTH WIG WILD WILLING WILT WIN WIND WINDOW WING WINK WINNER WINNING WINS WINTER WIPE WIRE WISDOM WISE WISH WIT WITH WITHOUT WITNESS WIZARD WOE WOKE WOLF WOMAN WON WONDER WOOD WOODEN WOOL WORD WORE WORK WORKER WORLD WORM WORN WORRY WORSE WORST WORTH WOULD WOVEN WOW WRAP WRAPPER WRECK WREN WRIST WRITE WRITING WRONG YACHT YAK YAM YARD YARN YAWN YEAR YELL YELLOW YES YET YIELD YOGA YOLK YOU YOUNG YOUR YOUTH ZAP ZEBRA ZERO ZEST ZIP ZIPPER ZONE ZOO ZOOM";
+  const LADDER_LEVELS = [{"l":"SALB","w":["LAB","SLAB"]},{"l":"LOWS","w":["OWL","SLOW"]},{"l":"AKBR","w":["ARK","BAR","BARK"]},{"l":"ANKT","w":["ANT","TAN","TANK"]},{"l":"AHRM","w":["ARM","HAM","HARM"]},{"l":"GNMOA","w":["NAG","AMONG","MANGO"]},{"l":"WMRSA","w":["RAW","WARM","SWARM"]},{"l":"AMGEL","w":["ELM","GALE","GLEAM"]},{"l":"HRDYA","w":["RAY","HARD","HARDY"]},{"l":"IWTST","w":["ITS","SIT","WIT","TWIST"]},{"l":"CEOHS","w":["SHE","HOSE","SHOE","CHOSE"]},{"l":"HINCP","w":["PIN","CHIN","INCH","PINCH"]},{"l":"AUECS","w":["ACE","CASE","CAUSE","SAUCE"]},{"l":"RNEPU","w":["PER","PUN","URN","PURE","PRUNE"]},{"l":"MRADA","w":["ARM","DAM","MAD","RAM","DRAMA"]},{"l":"RNRWAO","w":["OWN","WARN","ARROW","NARROW"]},{"l":"EHITGY","w":["TIE","THEY","EIGHT","EIGHTY"]},{"l":"SLTDEA","w":["LED","DELTA","LASTED","SALTED"]},{"l":"IAYLSE","w":["SLY","SAIL","SEAL","EASILY"]},{"l":"OTMNUA","w":["MAN","MOAN","MOUNT","AMOUNT"]},{"l":"LATENT","w":["NET","TAN","NEAT","TALE","TALENT"]},{"l":"NILSTE","w":["ITS","TEN","ENLIST","SILENT","TINSEL"]},{"l":"EWKORR","w":["ORE","OWE","WOKE","WORE","WORKER"]},{"l":"RTEMOE","w":["TEE","TOE","METER","METEOR","REMOTE"]},{"l":"AETLPS","w":["ATE","PEA","PASTEL","PETALS","STAPLE"]},{"l":"OUNTBT","w":["BUN","BUT","NOT","OUT","TON","BUTTON"]},{"l":"WEDRNA","w":["ARE","RAN","READ","WAND","DRAWN","WANDER"]},{"l":"POIFTR","w":["FIT","OPT","RIFT","RIOT","TRIP","PROFIT"]},{"l":"RGIEFN","w":["FIR","RIG","FERN","REIN","RING","FINGER"]},{"l":"MSARET","w":["EAR","RAM","STARE","STEAM","MASTER","STREAM"]},{"l":"RAEHCTP","w":["ERA","TAR","HEART","TEACH","CARPET","CHAPTER"]},{"l":"RIEOGNF","w":["FOG","RIG","FORGE","FINGER","REGION","FOREIGN"]},{"l":"RNTAOCO","w":["OAR","OAT","CORN","TORN","ACTOR","CARTOON"]},{"l":"SCIVEER","w":["SEE","SIR","RISE","SERVE","VERSE","SERVICE"]},{"l":"NREMSAI","w":["AIM","ERA","ARISE","REMAIN","MARINES","SEMINAR"]},{"l":"ERFFIGA","w":["FIR","RIG","FARE","GEAR","RAGE","GIRAFFE"]},{"l":"SEDLNRE","w":["DEN","END","SEEN","DENSE","ELDER","SLENDER"]},{"l":"SELTRHE","w":["LET","SET","TEE","SHEET","STEEL","THESE","SHELTER"]},{"l":"EETRIDR","w":["DIE","RED","RID","RIDER","TIRED","TRIED","RETIRED"]},{"l":"EPXMLEA","w":["APE","ELM","MAP","LAMP","AMPLE","MAPLE","EXAMPLE"]},{"l":"NEKEEWD","w":["DEN","EWE","NEW","KNEE","WEED","WEEK","WEEKEND"]},{"l":"OIKONGC","w":["CON","ION","KIN","COIN","ICON","KING","COOKING"]},{"l":"SOHMATC","w":["ASH","HAS","SAT","COAT","COAST","MATCH","STOMACH"]},{"l":"REIARRB","w":["ARE","EAR","ERA","BARE","RARE","REAR","BARRIER"]},{"l":"UPARLPO","w":["OUR","PUP","RAP","POUR","PROP","PULP","POLAR","POPULAR"]},{"l":"LCIAEMD","w":["AID","AIM","DAM","CLAIM","DECAL","MEDAL","DECIMAL","MEDICAL"]},{"l":"RONDATO","w":["ANT","RAT","TOO","DARN","DOOR","ODOR","ROAD","TORNADO"]},{"l":"EATYTRB","w":["BYE","EAT","RYE","TEAR","TRAY","YEAR","TREAT","BATTERY"]},{"l":"NTNOIHG","w":["GOT","INN","ION","HINT","THIN","NIGHT","THING","NOTHING"]},{"l":"EEASTRN","w":["EAT","NET","SAT","STARE","STEER","EARNEST","EASTERN","NEAREST"]},{"l":"AYMPIRR","w":["PAR","RAM","RAP","ARMY","PAIR","PRAY","RAMP","PRIMARY"]},{"l":"APSEYLR","w":["EAR","ERA","PEA","EARLY","SPARE","PARSLEY","PLAYERS","REPLAYS"]},{"l":"BHRCMEA","w":["ARM","ERA","RAM","BEACH","CHARM","CREAM","REACH","CHAMBER"]},{"l":"RPESATL","w":["LET","SAP","TAP","LATER","PASTEL","PETALS","STAPLE","PLASTER"]},{"l":"GIDRANW","w":["AID","AND","RID","DRAIN","GRAIN","GRIND","DARING","DRAWING"]},{"l":"KHNECIC","w":["HEN","INK","KIN","HIKE","NICE","CHECK","CHICK","CHICKEN"]},{"l":"STMRNOE","w":["NOR","ORE","SET","SNORE","STONE","STORE","STORM","MONSTER"]},{"l":"TBJCUSE","w":["BET","CUE","TUB","BEST","CUTE","JUST","STUB","SUBJECT"]},{"l":"RMYANHO","w":["ARM","OAR","YAM","HARM","YARN","MANOR","MAYOR","HARMONY"]},{"l":"EENGTMI","w":["GEM","MET","TEN","ITEM","MEET","MINE","TEEN","MEETING"]},{"l":"VRLALOE","w":["ALE","ERA","OAR","LOVE","OVER","ROLE","ROLL","OVERALL"]},{"l":"CURASDT","w":["CAR","SAT","TAR","CART","CAST","DART","CRUST","CUSTARD"]},{"l":"VTREUEN","w":["NUT","URN","VET","ENTER","EVENT","NEVER","TUNER","VENTURE"]},{"l":"RANAEMG","w":["AGE","ARM","GEM","GAME","ANGER","ARENA","RANGE","MANAGER"]},{"l":"ARFTICF","w":["ARC","FIT","TAR","FAIR","RAFT","RIFT","CRAFT","TRAFFIC"]},{"l":"OLMECWE","w":["COW","EWE","LOW","OWL","COME","MEOW","MOLE","WELCOME"]},{"l":"REALEDM","w":["ARM","ERA","LED","DREAM","ELDER","DEALER","LEADER","EMERALD"]},{"l":"RTRKOWA","w":["ROT","ROW","TAR","TWO","WAR","ROAR","WORK","ARROW","ARTWORK"]},{"l":"BANELAC","w":["ACE","ALE","BAN","LAB","BEAN","LACE","CABLE","CLEAN","BALANCE"]},{"l":"FISLHEM","w":["ELF","ELM","HIM","LIE","FLIES","SHELF","SLIME","SMILE","HIMSELF"]},{"l":"NREPTRA","w":["ART","NAP","RAN","TAR","ANTE","EARN","PEAR","PARENT","PARTNER"]},{"l":"OTRYETP","w":["PER","TOP","TOT","TOY","PORT","OTTER","POETRY","PRETTY","POTTERY"]},{"l":"LOGLRAI","w":["AIR","OIL","RAG","RIG","LAIR","RAIL","ROLL","GRILL","GORILLA"]},{"l":"ETTTAPM","w":["APE","EAT","MET","TAP","MATE","MEAT","TAME","TEAM","ATTEMPT"]},{"l":"RTOMCFO","w":["COT","FOR","ROT","TOO","FOOT","FORT","ROOM","MOTOR","COMFORT"]},{"l":"UMIPNPK","w":["IMP","KIN","NIP","PIN","PUN","PUP","PINK","PUMP","PUMPKIN"]},{"l":"EHSRTCT","w":["HER","SET","SHE","THE","REST","TEST","CHEST","CREST","STRETCH"]},{"l":"TTRASIN","w":["ART","ITS","SIN","TIN","STAIN","TRAIN","ARTIST","STRAIN","TRANSIT"]},{"l":"NETLBAK","w":["BAN","BAT","TAB","TAN","ANKLE","BLANK","TABLE","TAKEN","BLANKET"]},{"l":"GNRITES","w":["GET","RIG","SIN","TIN","STING","TIGER","SINGER","RESTING","STINGER"]},{"l":"TROARIP","w":["OAT","PIT","RIP","TAR","PART","TRIO","RATIO","PARROT","AIRPORT"]},{"l":"CREASTO","w":["COT","ERA","RAT","SAT","SCORE","STARE","CASTER","RECAST","COASTER"]},{"l":"RWSTEEN","w":["NET","TEE","TEN","WET","ENTER","STEER","SWEET","TENSE","WESTERN"]},{"l":"ERATEHL","w":["ART","ATE","LET","THE","ALERT","EARTH","LATER","HEATER","LEATHER"]},{"l":"GINERAT","w":["ARE","ART","ATE","EAR","AGENT","GREAT","RANGE","EATING","GRANITE","TEARING"]},{"l":"ANTGLIS","w":["GAS","NAG","TAG","TAN","GIANT","SNAIL","STAIN","SIGNAL","LASTING","SALTING"]},{"l":"GCAERUO","w":["ACE","COG","ERA","OUR","CAGE","CORE","ARGUE","CARGO","GRACE","COURAGE"]},{"l":"TDEPNRE","w":["PEN","PER","PET","TEN","DEEP","NEED","REED","ENTER","TREND","PRETEND"]},{"l":"RKTOWNE","w":["NEW","NOW","ROT","WOE","NEWT","OWNER","TENOR","TOKEN","TOWER","NETWORK"]},{"l":"PTNIERR","w":["NET","PEN","PER","TIE","PIER","REIN","TRIP","PRINT","RIPEN","PRINTER"]},{"l":"SGSELAS","w":["AGE","ALE","GEL","SEA","GALE","LESS","SALE","SEAL","GLASS","GLASSES"]},{"l":"UATBBHT","w":["BAT","BUT","HAT","HUT","TAB","TUB","BATH","THAT","TUBA","BATHTUB"]},{"l":"OLRUANJ","w":["JAR","NOR","OAR","OUR","RAN","RUN","URN","LOAN","LUNAR","JOURNAL"]},{"l":"NTIYSDE","w":["DYE","TEN","TIE","YET","DENT","DIET","SIDE","TIDY","TINY","DENSITY"]},{"l":"RETPETO","w":["PER","PET","PRO","TOP","PORE","PORT","TREE","TROT","OTTER","TREETOP"]},{"l":"IAIRRPE","w":["APE","EAR","PEA","RAP","PEAR","PIER","RARE","REAR","REPAIR","PRAIRIE"]},{"l":"AAGDEBN","w":["BED","BEG","DAB","DEN","BAND","BEAD","BEND","BADGE","AGENDA","BANDAGE"]},{"l":"RUTEION","w":["NOT","TEN","TIE","TIN","OUTER","ROUTE","TENOR","TUNER","UNITE","ROUTINE"]},{"l":"LUTRANA","w":["ANT","ART","RAN","TAN","TAR","AUNT","TUNA","TURN","LUNAR","NATURAL"]},{"l":"SMEGTAN","w":["ATE","EAT","GEM","MAT","SAME","AGENT","MEANT","STAGE","STEAM","MAGNETS"]}];
+  /* LADDER-DATA:END */
 
   const $ = id => document.getElementById(id);
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -875,6 +1245,21 @@
       }),
       hold: () => play(t => fm({ f: 660, ratio: 2, index: 0.8, when: t, dur: 0.3, vol: 0.07, sends: [[revIn, 0.3]] })),
       pickup: () => play(t => osc({ f: 380, f2: 640, when: t, dur: 0.08, vol: 0.12 })),
+      // Letter Ladder: each letter in a word rings one step higher
+      letter: i => play(t => osc({ f: mtof(72 + BELL[Math.min(i, BELL.length - 1)]), when: t, dur: 0.14, vol: 0.06,
+                                   sends: [[revIn, 0.2]] })),
+      word: () => play(t => {
+        [0, 4, 7].forEach((s, i) =>
+          fm({ f: mtof(76 + s), ratio: 3.01, index: 1, when: t + i * 0.06, dur: 0.8, vol: 0.05, sends: [[revIn, 0.4]] }));
+      }),
+      // Glittery run of bells under a cheer; bigger cheers get longer runs
+      sparkle: tier => play(t => {
+        const n = 3 + tier * 2;
+        for (let i = 0; i < n; i++) {
+          osc({ f: mtof(84 + BELL[i % BELL.length]), when: t + i * 0.045, dur: 0.3, vol: 0.03, pan: i % 2 ? 0.4 : -0.4,
+                sends: [[revIn, 0.5], [dlyIn, 0.3]] });
+        }
+      }),
       invalid: () => play(t => osc({ f: 210, f2: 150, when: t, dur: 0.16, vol: 0.11 })),
       lock: () => play(t => {
         osc({ f: 180, f2: 70, when: t, dur: 0.12, vol: 0.32 });
@@ -1126,6 +1511,46 @@
     ctx.globalAlpha = 1;
   }
 
+  // Cheers pop up (and are spoken) on good moves; tier 1 = nice, 3 = huge
+  const CHEERS = [
+    ["Nice!", "Noice!", "Sweet!", "Great!", "Good one!", "Yes!"],
+    ["Awesome!", "Super!", "Excellent!", "Wonderful!", "Noice!", "Way to go!", "Bazinga!"],
+    ["Amazing!", "Incredible!", "Fantastic!", "Spectacular!", "Unbelievable!", "Legendary!", "Bazinga!"]
+  ];
+  let cheerTimer, lastCheer = "", voice = null;
+  function cheer(tier) {
+    tier = Math.max(1, Math.min(3, tier));
+    const options = CHEERS[tier - 1].filter(w => w !== lastCheer);
+    const text = options[Math.floor(Math.random() * options.length)];
+    lastCheer = text;
+    const el = $("cheer"), span = document.createElement("span");
+    span.textContent = text;
+    el.replaceChildren(span);
+    el.classList.remove("go");
+    void el.offsetWidth;
+    el.classList.add("go");
+    clearTimeout(cheerTimer);
+    cheerTimer = setTimeout(() => el.classList.remove("go"), 1300);
+    snd.sfx.sparkle(tier);
+    say(text);
+  }
+  function say(text) {
+    if (!snd.sfxOn || !("speechSynthesis" in window)) return;
+    try {
+      const synth = window.speechSynthesis;
+      if (!voice) {
+        const vs = synth.getVoices();
+        voice = vs.find(v => /^en[-_]US/i.test(v.lang) && /samantha|aria|jenny|zira|google us/i.test(v.name))
+             || vs.find(v => /^en/i.test(v.lang)) || null;
+      }
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(text.replace("Noice", "Noyce").replace(/!/g, ""));
+      if (voice) u.voice = voice;
+      u.pitch = 1.35; u.rate = 1; u.volume = 0.9;
+      synth.speak(u);
+    } catch (e) {}
+  }
+
   let toastTimer;
   function showToast(text) {
     const t = $("toast");
@@ -1191,7 +1616,6 @@
       "30": [[0,0],[1,0],[-2,0],[1,-2],[-2,1]],   "03": [[0,0],[-1,0],[2,0],[-1,2],[2,-1]]
     };
     const LINE_POINTS = [0, 100, 300, 500, 800];
-    const LINE_NAMES = ["", "Single", "Double", "Triple", "Four lines!"];
 
     const st = {
       level: 1, board: null, cur: null, holdType: null, canHold: true, queue: [],
@@ -1304,7 +1728,7 @@
         st.level = st.startLevel + Math.floor(lines / 10);
         st.clearing = { rows, t: 0 };
         mode = "clear";
-        showToast(LINE_NAMES[n]);
+        if (n >= 2) cheer(n - 1);
         snd.sfx.clear(n, 0);
         if (n === 4) { snd.sfx.big(); shake(14); } else if (n === 3) shake(7); else if (n === 2) shake(3);
         const s = cell * dpr;
@@ -1681,7 +2105,9 @@
           score += 300;
           setTimeout(() => { showToast("All clear! +300"); snd.sfx.big(); }, 350);
         }
-        showToast(st.combo > 1 ? `Combo ×${st.combo}` : n > 1 ? `${n} lines!` : "Blast!");
+        const power = n + st.combo - 1;
+        if (power >= 2) cheer(power >= 4 ? 3 : power >= 3 ? 2 : 1);
+        else showToast("Blast!");
       } else {
         st.miss++;
         if (st.miss >= 3) st.combo = 0;
@@ -1883,6 +2309,7 @@
   // Game flow
   // =====================================================================
   function applyModeClass() {
+    document.body.classList.remove("mode-ladder");
     document.body.classList.toggle("mode-blast", game === "blast");
   }
 
@@ -1911,7 +2338,7 @@
     if (game === "classic") C.start(); else B.start();
     hideOverlays();
     if (document.activeElement) document.activeElement.blur();
-    $("pauseBtn").textContent = "Pause";
+    $("pauseBtn").setAttribute("aria-label", "Pause");
     mode = "play";
     goFullscreen();
     snd.init();
@@ -1950,7 +2377,6 @@
     $("menuTitle").textContent = info.title;
     $("menuDesc").textContent = info.desc;
     $("menuHow").textContent = coarse ? info.touch : info.keys;
-    document.querySelectorAll("#modeTabs button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.pick === m)));
     updateStats();
   }
 
@@ -1984,27 +2410,20 @@
       B.pointerCancel();
       snd.stopMusic();
       $("pauseOverlay").hidden = false;
-      $("pauseBtn").textContent = "Resume";
+      $("pauseBtn").setAttribute("aria-label", "Resume");
       $("resumeBtn").focus();
     } else if (mode === "pause") {
       mode = pausedFrom; pausedFrom = null;
       $("pauseOverlay").hidden = true;
-      $("pauseBtn").textContent = "Pause";
+      $("pauseBtn").setAttribute("aria-label", "Pause");
       snd.resumeMusic();
       if (document.activeElement) document.activeElement.blur();
     }
   }
 
   function toMenu() {
-    mode = "start";
-    B.reset();
-    C.clearCur();
-    snd.stopMusic();
-    hideOverlays();
-    $("pauseBtn").textContent = "Pause";
-    $("startOverlay").hidden = false;
-    pickMode(game);
-    $("playBtn").focus();
+    $("pauseBtn").setAttribute("aria-label", "Pause");
+    goHub();
   }
 
   let last = performance.now();
@@ -2064,6 +2483,83 @@
   const playerName = () => (store.get("brickfall-name") || "").trim();
   let pendingScore = null;
 
+  // ---- Stealable crowns: the all-time #1 in each game holds the crown ----
+  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder" };
+  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder" };
+  const CROWN_SVG = '<svg viewBox="0 0 34 27" aria-hidden="true"><path d="M3 8 L10 14 L17 3 L24 14 L31 8 L28 21 H6 Z" fill="#ffd23f" stroke="#e0a800" stroke-width="1.5" stroke-linejoin="round"/><rect x="6" y="22" width="22" height="4" rx="2" fill="#e0a800"/></svg>';
+  const kings = {};
+  const fmtScore = (mode, pts) => mode === "ladder" ? `Level ${pts}` : pts.toLocaleString();
+
+  function seenCrowns() {
+    try { return JSON.parse(store.get("brickfall-crowns")) || {}; } catch (e) { return {}; }
+  }
+  function markSeen(mode, name) {
+    const seen = seenCrowns();
+    seen[mode] = name;
+    store.set("brickfall-crowns", JSON.stringify(seen));
+  }
+  function renderKing(mode) {
+    const el = $(KING_IDS[mode]), k = kings[mode];
+    el.replaceChildren();
+    if (!k) return;
+    el.insertAdjacentHTML("afterbegin", CROWN_SVG);
+    el.append(`${k.name} · ${fmtScore(mode, k.score)}`);
+  }
+
+  // Saves a score, and reports whether it took (or stole) that game's crown
+  async function submitWithCrown(mode, name, pts) {
+    let before = null;
+    try { before = (await lb.top(mode, "all"))[0] || null; } catch (e) {}
+    await lb.submit(mode, name, pts);
+    if (before && pts <= before.score) return null;
+    kings[mode] = { name, score: pts };
+    markSeen(mode, name);
+    if (!before) return { type: "took" };
+    if (sameName(before.name, name)) return null;
+    return { type: "stole", from: before.name };
+  }
+  function crownMessage(crown, mode) {
+    return crown.type === "stole"
+      ? `👑 You stole the ${MODE_NAMES[mode]} crown from ${crown.from}!`
+      : `👑 You took the ${MODE_NAMES[mode]} crown!`;
+  }
+
+  // On the home screen: show who holds each crown, and announce any thefts since this phone last looked
+  async function refreshCrowns() {
+    if (!lb.on) return;
+    const modes = Object.keys(MODE_NAMES);
+    await Promise.all(modes.map(async m => {
+      try { kings[m] = (await lb.top(m, "all"))[0] || null; } catch (e) {}
+    }));
+    const seen = seenCrowns(), me = playerName(), news = $("crownNews");
+    news.replaceChildren();
+    for (const m of modes) {
+      renderKing(m);
+      const k = kings[m];
+      if (!k) continue;
+      const prev = seen[m];
+      if (prev && !sameName(prev, k.name)) {
+        const text = me && sameName(k.name, me) ? `You stole the ${MODE_NAMES[m]} crown from ${prev}!`
+                   : me && sameName(prev, me) ? `${k.name} stole your ${MODE_NAMES[m]} crown!`
+                   : `${k.name} stole the ${MODE_NAMES[m]} crown from ${prev}!`;
+        const note = document.createElement("div");
+        note.className = "crown-note";
+        note.insertAdjacentHTML("afterbegin", CROWN_SVG);
+        const span = document.createElement("span");
+        span.textContent = text;
+        const close = document.createElement("button");
+        close.type = "button";
+        close.setAttribute("aria-label", "Dismiss");
+        close.textContent = "×";
+        close.addEventListener("click", () => note.remove());
+        note.append(span, close);
+        news.append(note);
+      }
+      seen[m] = k.name;
+    }
+    store.set("brickfall-crowns", JSON.stringify(seen));
+  }
+
   function setSaveStatus(text, withChange) {
     const el = $("saveStatus");
     el.textContent = text;
@@ -2088,13 +2584,18 @@
     $("saveForm").hidden = true;
     setSaveStatus("Saving to the family board…");
     try {
-      await lb.submit(mode, name, pts);
+      const crown = await submitWithCrown(mode, name, pts);
       let msg = "Saved to the family board.";
-      try {
-        const rows = await lb.top(mode, "week");
-        const i = rows.findIndex(r => sameName(r.name, name));
-        if (i >= 0) msg = rows[i].score === pts ? `Saved! You're #${i + 1} this week.` : `Saved! Your best this week is #${i + 1}.`;
-      } catch (e) {}
+      if (crown) {
+        msg = crownMessage(crown, mode);
+        cheer(3);
+      } else {
+        try {
+          const rows = await lb.top(mode, "week");
+          const i = rows.findIndex(r => sameName(r.name, name));
+          if (i >= 0) msg = rows[i].score === pts ? `Saved! You're #${i + 1} this week.` : `Saved! Your best this week is #${i + 1}.`;
+        } catch (e) {}
+      }
       setSaveStatus(`${msg} Playing as ${name}.`, true);
     } catch (e) {
       pendingScore = { mode, pts };
@@ -2153,7 +2654,7 @@
         if (me && sameName(r.name, me)) li.className = "me";
         const rank = document.createElement("span"); rank.className = "rank"; rank.textContent = i + 1;
         const who = document.createElement("span"); who.className = "who"; who.textContent = r.name;
-        const pts = document.createElement("span"); pts.className = "pts"; pts.textContent = r.score.toLocaleString();
+        const pts = document.createElement("span"); pts.className = "pts"; pts.textContent = boardMode === "ladder" ? `Level ${r.score}` : r.score.toLocaleString();
         li.append(rank, who, pts);
         list.append(li);
       });
@@ -2166,7 +2667,7 @@
 
   function openBoard() {
     boardOpener = document.activeElement;
-    boardMode = game;
+    boardMode = view === "ladder" ? "ladder" : game;
     syncSeg();
     $("boardModal").hidden = false;
     $("boardClose").focus();
@@ -2192,6 +2693,378 @@
   });
 
   // =====================================================================
+  // Letter Ladder
+  // =====================================================================
+  const LL = (() => {
+    const DICT = new Set(LADDER_WORDS.split(" "));
+    const HINT_COST = 10;
+    const wheel = $("ldWheel");
+    let st = load();
+    let letters = [], btns = [], path = [];
+    let typed = false, dragging = false, pointer = null, moved = false, downIdx = -1, wasLast = false;
+    let pendingLevel = 0, shakeTimer;
+
+    function fresh() { return { level: 1, coins: 30, found: [], bonus: [], hints: {}, best: 0 }; }
+    function load() {
+      try {
+        const s = JSON.parse(store.get("brickfall-ladder"));
+        if (s && s.level >= 1) return Object.assign(fresh(), s);
+      } catch (e) {}
+      return fresh();
+    }
+    function save() { store.set("brickfall-ladder", JSON.stringify(st)); }
+
+    // After the last level, keep going by cycling the harder half of the levels
+    function data() {
+      const n = LADDER_LEVELS.length;
+      const i = st.level <= n ? st.level - 1 : 50 + ((st.level - n - 1) % (n - 50));
+      return LADDER_LEVELS[i];
+    }
+    const isWord = w => DICT.has(w) || (w.length >= 4 && w.endsWith("S") && DICT.has(w.slice(0, -1)));
+    const current = () => path.map(i => letters[i]).join("");
+    const msg = text => { $("ldMsg").textContent = text; };
+
+    // ---- wheel ----
+    function setupWheel() {
+      btns.forEach(b => b.remove());
+      letters = data().l.split("");
+      btns = letters.map((ch, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "ld-letter";
+        b.tabIndex = -1;
+        b.dataset.i = i;
+        wheel.append(b);
+        return b;
+      });
+      placeLetters();
+    }
+    function placeLetters() {
+      const n = letters.length, r = n <= 4 ? 33 : 36;
+      btns.forEach((b, i) => {
+        const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+        b.style.left = 50 + r * Math.cos(a) + "%";
+        b.style.top = 50 + r * Math.sin(a) + "%";
+        b.textContent = letters[i];
+        b.setAttribute("aria-label", `Letter ${letters[i]}`);
+      });
+    }
+    function shuffle() {
+      clearPath();
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      placeLetters();
+      snd.sfx.rotate();
+    }
+    const centerOf = i => [parseFloat(btns[i].style.left), parseFloat(btns[i].style.top)];
+
+    // ---- rendering ----
+    function renderTop() {
+      $("ldLevel").textContent = `Level ${st.level}`;
+      $("ldCoins").textContent = st.coins;
+    }
+    function renderWords() {
+      const box = $("ldWords");
+      const req = data().w;
+      const cols = req.length > 5 ? 2 : 1;
+      const longest = Math.max(...req.map(w => w.length));
+      const avail = Math.min($("ladder").clientWidth || 360, 440);
+      const size = Math.max(18, Math.min(36, Math.floor((avail / cols - 18 - (longest - 1) * 4) / longest)));
+      box.style.setProperty("--cols", cols);
+      box.style.setProperty("--box", size + "px");
+      box.replaceChildren();
+      for (const w of req) {
+        const row = document.createElement("div");
+        row.className = "ld-word";
+        row.dataset.w = w;
+        const found = st.found.includes(w), shown = st.hints[w] || 0;
+        if (found) row.classList.add("found");
+        [...w].forEach((ch, i) => {
+          const c = document.createElement("span");
+          c.className = "ld-box";
+          if (found || i < shown) c.textContent = ch;
+          if (!found && i < shown) c.classList.add("hinted");
+          row.append(c);
+        });
+        row.setAttribute("aria-label", found ? w : `${w.length}-letter word, not found yet`);
+        box.append(row);
+      }
+    }
+    function renderCurrent() {
+      const el = $("ldCurrent");
+      el.classList.remove("shake");
+      el.replaceChildren();
+      const w = current();
+      if (w) { const s = document.createElement("span"); s.textContent = w; el.append(s); }
+      btns.forEach((b, i) => b.classList.toggle("on", path.includes(i)));
+      $("ldEnter").hidden = !(typed && path.length >= 3);
+      const pts = path.map(centerOf);
+      if (dragging && pointer && path.length) pts.push(pointer);
+      $("ldLines").setAttribute("viewBox", "0 0 100 100");
+      $("ldPath").setAttribute("points", pts.map(p => p.join(",")).join(" "));
+    }
+    function render() { renderTop(); renderWords(); renderCurrent(); }
+    function clearPath() { path = []; typed = false; dragging = false; pointer = null; renderCurrent(); }
+    function shakeWord(w) {
+      const el = $("ldCurrent"), s = document.createElement("span");
+      s.textContent = w;
+      el.replaceChildren(s);
+      el.classList.add("shake");
+      clearTimeout(shakeTimer);
+      shakeTimer = setTimeout(() => { if (!path.length) renderCurrent(); }, 500);
+    }
+    function addLetter(i) {
+      if (path.includes(i)) return false;
+      path.push(i);
+      snd.sfx.letter(path.length - 1);
+      return true;
+    }
+
+    // ---- words ----
+    function submit() {
+      const w = current(), req = data().w;
+      path = []; typed = false; dragging = false; pointer = null;
+      renderCurrent();
+      if (w.length < 3) { if (w) { shakeWord(w); msg("Words need at least 3 letters."); } return; }
+      if (req.includes(w)) {
+        if (st.found.includes(w)) { msg(`You already found ${w}.`); snd.sfx.invalid(); return; }
+        st.found.push(w);
+        delete st.hints[w];
+        save();
+        msg("");
+        snd.sfx.word();
+        renderWords();
+        const row = $("ldWords").querySelector(`[data-w="${w}"]`);
+        if (row) row.classList.add("pop");
+        const longest = Math.max(...req.map(x => x.length));
+        if (st.found.length === req.length) { cheer(3); setTimeout(complete, 900); }
+        else if (w.length === longest) cheer(3);
+        else if (w.length >= 5 && Math.random() < 0.7) cheer(2);
+        else if (w.length === 4 && Math.random() < 0.35) cheer(1);
+        return;
+      }
+      if (isWord(w)) {
+        if (st.bonus.includes(w)) { msg(`You already found the bonus word ${w}.`); snd.sfx.invalid(); return; }
+        st.bonus.push(w);
+        st.coins += 1;
+        save();
+        renderTop();
+        msg(`Bonus word: ${w}! +1 coin`);
+        snd.sfx.pickup();
+        return;
+      }
+      shakeWord(w);
+      msg(`${w} isn't in the word list.`);
+      snd.sfx.invalid();
+    }
+
+    function hint() {
+      const left = data().w.filter(w => !st.found.includes(w));
+      if (!left.length) return;
+      if (st.coins < HINT_COST) { msg(`Hints cost ${HINT_COST} coins. Find bonus words to earn more.`); snd.sfx.invalid(); return; }
+      const w = left.slice().sort((a, b) => (st.hints[b] || 0) - (st.hints[a] || 0) || a.length - b.length)[0];
+      st.coins -= HINT_COST;
+      st.hints[w] = (st.hints[w] || 0) + 1;
+      if (st.hints[w] >= w.length) { st.found.push(w); delete st.hints[w]; }
+      save();
+      snd.sfx.hold();
+      msg("");
+      render();
+      if (st.found.length === data().w.length) setTimeout(complete, 600);
+    }
+
+    // ---- level complete ----
+    async function postLevel(name, lvl) {
+      const note = $("ldSaveNote");
+      note.hidden = false;
+      note.textContent = "Saving to the family board…";
+      try {
+        const crown = await submitWithCrown("ladder", name, lvl);
+        note.textContent = crown ? crownMessage(crown, "ladder") : `Saved! ${name} reached level ${lvl}.`;
+      } catch (e) {
+        note.textContent = "Couldn't save to the family board this time.";
+      }
+    }
+    function complete() {
+      const lvl = st.level, bonus = st.bonus.length;
+      st.coins += 5;
+      st.best = Math.max(st.best, lvl);
+      save();
+      renderTop();
+      snd.sfx.big();
+      $("ldDoneTitle").textContent = `Level ${lvl} complete!`;
+      $("ldDoneNote").textContent = `+5 coins${bonus ? ` · ${bonus} bonus word${bonus === 1 ? "" : "s"}` : ""}`;
+      $("ldNameForm").hidden = true;
+      $("ldSaveNote").hidden = true;
+      if (lb.on) {
+        const name = playerName();
+        if (name) postLevel(name, lvl);
+        else { pendingLevel = lvl; $("ldName").value = ""; $("ldNameForm").hidden = false; }
+      }
+      $("ldDone").hidden = false;
+      $("ldNext").focus();
+    }
+    function next() {
+      $("ldDone").hidden = true;
+      st.level++;
+      st.found = []; st.bonus = []; st.hints = {};
+      save();
+      setupWheel();
+      render();
+      msg("");
+    }
+    $("ldNameForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = $("ldName").value.trim().slice(0, 16);
+      if (!name) { $("ldName").focus(); return; }
+      store.set("brickfall-name", name);
+      $("ldNameForm").hidden = true;
+      if (pendingLevel) { postLevel(name, pendingLevel); pendingLevel = 0; }
+      $("ldNext").focus();
+    });
+
+    // ---- input: swipe across letters, or tap them one at a time ----
+    function toPct(e) {
+      const r = wheel.getBoundingClientRect();
+      return [((e.clientX - r.left) / r.width) * 100, ((e.clientY - r.top) / r.height) * 100];
+    }
+    function hit(p) {
+      let best = -1, bd = Infinity;
+      btns.forEach((b, i) => {
+        const [x, y] = centerOf(i), d = Math.hypot(x - p[0], y - p[1]);
+        if (d < bd) { bd = d; best = i; }
+      });
+      return bd <= 12.5 ? best : -1;
+    }
+    wheel.addEventListener("pointerdown", e => {
+      if (view !== "ladder" || e.target.closest("#ldEnter")) return;
+      const p = toPct(e), i = hit(p);
+      if (i < 0) return;
+      e.preventDefault();
+      try { wheel.setPointerCapture(e.pointerId); } catch (err) {}
+      clearTimeout(shakeTimer);
+      if (!typed) path = [];
+      downIdx = i;
+      wasLast = typed && path[path.length - 1] === i;
+      moved = false;
+      dragging = true;
+      pointer = p;
+      if (!wasLast) addLetter(i);
+      renderCurrent();
+    });
+    wheel.addEventListener("pointermove", e => {
+      if (!dragging) return;
+      pointer = toPct(e);
+      const j = hit(pointer);
+      if (j >= 0 && j !== path[path.length - 1]) {
+        if (path.length >= 2 && j === path[path.length - 2]) path.pop();
+        else addLetter(j);
+        moved = true;
+      }
+      renderCurrent();
+    });
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      pointer = null;
+      if (moved && path.length >= 2) { submit(); return; }
+      if (wasLast && !moved) path.pop();
+      typed = path.length > 0;
+      renderCurrent();
+    };
+    wheel.addEventListener("pointerup", endDrag);
+    wheel.addEventListener("pointercancel", endDrag);
+    $("ldEnter").addEventListener("click", submit);
+    $("ldCurrent").addEventListener("click", clearPath);
+    $("ldShuffle").addEventListener("click", shuffle);
+    $("ldHint").addEventListener("click", hint);
+    $("ldNext").addEventListener("click", next);
+
+    function key(e) {
+      const k = e.key;
+      if (/^[a-z]$/i.test(k)) {
+        const ch = k.toUpperCase();
+        const i = letters.findIndex((c, idx) => c === ch && !path.includes(idx));
+        if (i >= 0) { if (!typed) path = []; typed = true; addLetter(i); renderCurrent(); }
+      } else if (k === "Backspace") {
+        e.preventDefault();
+        path.pop();
+        typed = path.length > 0;
+        renderCurrent();
+      } else if (k === "Enter") {
+        e.preventDefault();
+        submit();
+      } else if (k === "Escape") {
+        clearPath();
+      } else if (k === " ") {
+        e.preventDefault();
+        shuffle();
+      }
+    }
+
+    function enter() {
+      setupWheel();
+      render();
+      msg(st.found.length ? "" : "Swipe across the letters, or tap them, to spell words.");
+    }
+
+    return {
+      enter, key, next, renderWords,
+      get level() { return st.level; },
+      get best() { return st.best; }
+    };
+  })();
+
+  // =====================================================================
+  // Home screen and navigation
+  // =====================================================================
+  let view = "hub";
+  function setView(v) {
+    view = v;
+    document.body.classList.remove("view-hub", "view-play", "view-ladder");
+    document.body.classList.add("view-" + v);
+  }
+  function updateHub() {
+    $("hubClassic").textContent = bests.classic ? `Best ${bests.classic.toLocaleString()}` : "Falling blocks";
+    $("hubBlast").textContent = bests.blast ? `Best ${bests.blast.toLocaleString()}` : "Drag & clear";
+    $("hubLadder").textContent = LL.best ? `On level ${LL.level}` : "Find the words";
+  }
+  function goHub() {
+    if (view === "play") { mode = "start"; B.reset(); C.clearCur(); hideOverlays(); }
+    snd.stopMusic();
+    document.body.classList.remove("mode-blast", "mode-ladder");
+    setView("hub");
+    updateHub();
+    updateStats();
+    refreshCrowns();
+  }
+  function openGame(m) {
+    setView("play");
+    mode = "start";
+    score = 0; lines = 0;
+    hideOverlays();
+    $("startOverlay").hidden = false;
+    pickMode(m);
+    $("playBtn").focus();
+  }
+  function openLadder() {
+    setView("ladder");
+    document.body.classList.remove("mode-blast");
+    document.body.classList.add("mode-ladder");
+    snd.init();
+    snd.setBpm(100);
+    snd.startMusic();
+    LL.enter();
+  }
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => {
+    if (b.dataset.go === "ladder") openLadder(); else openGame(b.dataset.go);
+  }));
+  $("homeBtn").addEventListener("click", goHub);
+  $("hubBoardBtn").addEventListener("click", openBoard);
+
+  // =====================================================================
   // Input wiring
   // =====================================================================
   const GAME_KEYS = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "];
@@ -2199,6 +3072,12 @@
     const k = e.key;
     if (!$("boardModal").hidden) { if (k === "Escape") closeBoard(); return; }
     if (e.target instanceof HTMLInputElement) return;
+    if (!$("ldDone").hidden) {
+      if (k === "Enter" && document.activeElement?.tagName !== "BUTTON") { e.preventDefault(); LL.next(); }
+      return;
+    }
+    if (view === "ladder") { LL.key(e); return; }
+    if (view === "hub") return;
     if (k === "m" || k === "M") { toggleMusic(); return; }
     if (mode === "start" || mode === "over") {
       if (k === "Enter" && document.activeElement?.tagName !== "BUTTON") { e.preventDefault(); startGame(); }
@@ -2273,10 +3152,6 @@
   $("sfxBtn").addEventListener("click", () => { snd.toggleSfx(); syncToggles(); });
 
   $("playBtn").addEventListener("click", () => startGame());
-  $("modeTabs").addEventListener("click", e => {
-    const b = e.target.closest("button[data-pick]");
-    if (b && mode === "start") pickMode(b.dataset.pick);
-  });
   $("againBtn").addEventListener("click", () => startGame());
   $("resumeBtn").addEventListener("click", togglePause);
   $("pauseMenuBtn").addEventListener("click", toMenu);
@@ -2286,10 +3161,12 @@
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && (mode === "play" || mode === "clear")) togglePause();
   });
-  window.addEventListener("resize", resize);
+  window.addEventListener("resize", () => { resize(); if (view === "ladder") LL.renderWords(); });
 
   syncToggles();
-  pickMode(store.get("brickfall-mode") === "blast" ? "blast" : "classic");
+  game = store.get("brickfall-mode") === "blast" ? "blast" : "classic";
+  resize();
+  goHub();
   requestAnimationFrame(loop);
 })();
 </script>
