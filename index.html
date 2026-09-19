@@ -866,6 +866,13 @@
   .slot-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); color: #fff; font-size: 20px; font-weight: 700; line-height: 1; }
   .slot-bet { font-family: "Fredoka", var(--body); font-size: 15px; color: #fff; min-width: 66px; text-align: center; }
   .slot-spin { font-size: 18px; padding: 10px 28px; }
+  .slot-spin.bonus { animation: bonuspulse 0.9s ease-in-out infinite; }
+  .slot-machine.bonus { box-shadow: inset 0 0 0 3px #fff, 0 0 26px 6px rgba(255, 210, 63, 0.75), 0 6px 0 rgba(0, 0, 0, 0.35); }
+  @keyframes bonuspulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 3px 0 #b38a12; }
+    50% { transform: scale(1.07); box-shadow: 0 3px 0 #b38a12, 0 0 18px rgba(255, 210, 63, 0.9); }
+  }
+  @media (prefers-reduced-motion: reduce) { .slot-spin.bonus { animation: none; } }
   .mode-slots .primary {
     background: #ffd23f;
     color: #3b0f3f;
@@ -1000,7 +1007,7 @@
   <section class="slots" id="slots" aria-label="Spin to Win">
     <canvas id="slotWheel" aria-label="Bonus wheel"></canvas>
     <div class="slot-meter" title="Crowns collected"><span id="slotMeter"></span></div>
-    <div class="slot-machine">
+    <div class="slot-machine" id="slotMachine">
       <canvas id="slotReels" aria-label="Reels"></canvas>
       <div class="slot-handle" id="slotHandle" role="button" tabindex="0" aria-label="Pull the handle to spin">
         <div class="slot-handle-track"></div>
@@ -1673,10 +1680,10 @@
      "Oh Dang!", "Oh Snap!", "Holy moly!", "On fire!", "Crushed it!"]
   ];
   let cheerTimer, lastCheer = "", voice = null;
-  function cheer(tier) {
+  function cheer(tier, forced) {
     tier = Math.max(1, Math.min(3, tier));
     const options = CHEERS[tier - 1].filter(w => w !== lastCheer);
-    const text = options[Math.floor(Math.random() * options.length)];
+    const text = forced || options[Math.floor(Math.random() * options.length)];
     lastCheer = text;
     const el = $("cheer"), span = document.createElement("span");
     span.textContent = text;
@@ -3224,7 +3231,7 @@
     let st = load();
     let reels = [0, 1, 2].map(i => ({ pos: i * 5, vel: 0, state: "idle", from: 0, to: 0, t: 0, dur: 0, target: 0 }));
     let wheel = { angle: 0, spinning: false, t: 0, dur: 0, from: 0, to: 0, prize: -1, lastTick: 0, live: false };
-    let tile = 60, wheelSize = 260, autoTimer = null;
+    let tile = 60, wheelSize = 260, autoTimer = null, bonusReady = false;
 
     function fresh() { return { chips: 500, bet: 10, meter: 0, free: 0, best: 0, day: "" }; }
     function load() {
@@ -3297,9 +3304,10 @@
     function spin() {
       if (busy()) return;
       snd.init();
+      if (bonusReady) { startWheel(); return; }
       if (st.free > 0) st.free--;
       else {
-        if (st.chips < st.bet) { msg("Out of chips — tap Free chips."); snd.sfx.invalid(); return; }
+        if (st.chips < st.bet) { msg("Out of chips — tap the Free chips button."); snd.sfx.invalid(); return; }
         st.chips -= st.bet;
       }
       save();
@@ -3379,7 +3387,7 @@
       }
       save();
       renderTop();
-      if (bonus) setTimeout(startWheel, 700);
+      if (bonus) setTimeout(armWheel, 700);
       else if (st.free > 0) autoTimer = setTimeout(spin, 900);
     }
 
@@ -3390,7 +3398,24 @@
     }
 
     // ---- bonus wheel ----
+    // Three crowns (or a full meter) earns a wheel spin, which the player takes themselves
+    function armWheel() {
+      bonusReady = true;
+      wheel.live = true;
+      $("slotWin").textContent = "Spin to Win!";
+      $("slotSpin").textContent = "Spin the wheel";
+      $("slotSpin").classList.add("bonus");
+      $("slotMachine").classList.add("bonus");
+      msg("Pull the handle or tap to spin the wheel");
+      snd.sfx.levelUp();
+      cheer(3, "Bazinga!");
+    }
+
     function startWheel() {
+      bonusReady = false;
+      $("slotSpin").textContent = "Spin";
+      $("slotSpin").classList.remove("bonus");
+      $("slotMachine").classList.remove("bonus");
       wheel.live = true;
       wheel.prize = Math.floor(Math.random() * WEDGES.length);
       const seg = TAU / WEDGES.length;
@@ -3401,9 +3426,8 @@
       wheel.t = 0;
       wheel.dur = 5.2;
       wheel.spinning = true;
-      msg("Bonus wheel!");
-      cheer(3);
-      snd.sfx.levelUp();
+      msg("");
+      snd.sfx.lever();
     }
     function wheelPrize() {
       const p = WEDGES[wheel.prize];
@@ -3537,7 +3561,7 @@
       $("slotBet").textContent = st.bet;
       $("slotMeter").style.width = (st.meter / METER_MAX) * 100 + "%";
       $("slotFree").textContent = st.free ? `${st.free} free` : "";
-      $("slotRefill").hidden = st.chips >= BETS[0];
+      $("slotRefill").hidden = st.chips >= st.bet;
     }
 
     function size() {
