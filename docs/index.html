@@ -1403,7 +1403,7 @@
     let ctx = null, master, sfxBus, musicBus, padBus, revIn, dlyIn, dly, noiseBuf;
     let musicOn = store.get("brickfall-music") !== "0";
     let sfxOn = store.get("brickfall-sfx") !== "0";
-    let wantMusic = false, timer = null, nextT = 0, step = 0, bpm = 112;
+    let wantMusic = false, timer = null, nextT = 0, step = 0, bpm = 112, styleName = "synthwave";
     const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 
     function impulse(sec) {
@@ -1620,85 +1620,157 @@
       })
     };
 
-    // ---- Chill synthwave: Dm9 - Bbmaj7 - Fmaj7 - Cadd9 ----
-    const PROG = [
-      { root: 38, chord: [53, 57, 60, 64] },
-      { root: 34, chord: [50, 53, 57, 62] },
-      { root: 41, chord: [52, 57, 60, 64] },
-      { root: 36, chord: [52, 55, 60, 62] }
-    ];
-    // [step, note, length in 16ths] per bar
-    const LEAD = [
-      [[0, 69, 6], [6, 67, 2], [8, 65, 4], [12, 64, 4]],
-      [[0, 62, 8], [8, 65, 4], [12, 67, 4]],
-      [[0, 69, 6], [6, 72, 2], [8, 69, 8]],
-      [[0, 67, 8], [8, 64, 4], [12, 62, 4]]
-    ];
+    // ---- One soundtrack per game ----
+    // Each style brings its own key, tempo, drum feel, bass line and sparkle.
+    const STYLES = {
+      // Classic: driving synthwave in D minor
+      synthwave: {
+        bpm: 108,
+        prog: [{ root: 38, chord: [53, 57, 60, 64] }, { root: 34, chord: [50, 53, 57, 62] },
+               { root: 41, chord: [52, 57, 60, 64] }, { root: 36, chord: [52, 55, 60, 62] }],
+        drums: "four", bass: "octave", pad: 0.016, ep: 0.035, arp: "tri", lead: true
+      },
+      // Brick Blast: brighter and bouncier, F major
+      bounce: {
+        bpm: 112,
+        prog: [{ root: 41, chord: [53, 57, 60, 65] }, { root: 45, chord: [52, 57, 60, 64] },
+               { root: 43, chord: [50, 55, 59, 62] }, { root: 36, chord: [52, 55, 60, 64] }],
+        drums: "pop", bass: "bouncy", pad: 0.012, ep: 0.03, arp: "pluck", lead: false
+      },
+      // Letter Ladder: slow lo-fi study beat, A minor
+      lofi: {
+        bpm: 82,
+        prog: [{ root: 45, chord: [52, 55, 59, 64] }, { root: 41, chord: [53, 57, 60, 64] },
+               { root: 36, chord: [52, 55, 59, 62] }, { root: 43, chord: [50, 55, 59, 62] }],
+        drums: "lofi", bass: "simple", pad: 0.02, ep: 0.05, arp: "none", lead: false
+      },
+      // Spin to Win: swinging lounge with a walking bass, C major
+      lounge: {
+        bpm: 124,
+        prog: [{ root: 36, chord: [52, 55, 60, 64] }, { root: 45, chord: [52, 57, 60, 64] },
+               { root: 38, chord: [53, 57, 60, 65] }, { root: 43, chord: [50, 55, 59, 65] }],
+        drums: "shuffle", bass: "walking", pad: 0.008, ep: 0.045, arp: "none", lead: false
+      },
+      // Sweet Swap: bubbly pop with bells, C major
+      bubbly: {
+        bpm: 118,
+        prog: [{ root: 36, chord: [55, 60, 64, 67] }, { root: 43, chord: [55, 59, 62, 67] },
+               { root: 45, chord: [52, 57, 60, 64] }, { root: 41, chord: [53, 57, 60, 65] }],
+        drums: "pop", bass: "bouncy", pad: 0.014, ep: 0, arp: "bell", lead: true
+      }
+    };
+    let style = STYLES.synthwave;
+    // one short motif per bar: [step, note, length in 16ths]
+    const LEADS = {
+      synthwave: [[[0, 69, 6], [6, 67, 2], [8, 65, 4], [12, 64, 4]], [[0, 62, 8], [8, 65, 4], [12, 67, 4]],
+                  [[0, 69, 6], [6, 72, 2], [8, 69, 8]], [[0, 67, 8], [8, 64, 4], [12, 62, 4]]],
+      bubbly: [[[0, 72, 4], [4, 76, 4], [8, 79, 6]], [[0, 74, 4], [4, 71, 4], [8, 67, 6]],
+               [[0, 72, 4], [6, 76, 2], [8, 81, 6]], [[0, 79, 4], [4, 76, 4], [8, 72, 6]]]
+    };
 
-    function kick(t) {
-      osc({ f: 110, f2: 42, when: t, dur: 0.35, vol: 0.55, out: musicBus });
+    function kick(t, soft) {
+      osc({ f: soft ? 95 : 110, f2: 42, when: t, dur: soft ? 0.4 : 0.35, vol: soft ? 0.4 : 0.55, out: musicBus });
       noise({ when: t, dur: 0.02, vol: 0.04, lp: 1500, out: musicBus });
       // sidechain-style pump on the pads
       padBus.gain.cancelScheduledValues(t);
-      padBus.gain.setValueAtTime(0.4, t);
+      padBus.gain.setValueAtTime(0.45, t);
       padBus.gain.linearRampToValueAtTime(1, t + 0.32);
     }
-    function snare(t) {
-      noise({ when: t, dur: 0.3, vol: 0.09, hp: 1000, lp: 6000, out: musicBus, sends: [[revIn, 1]] });
+    function snare(t, kind) {
+      if (kind === "clap") {
+        for (const o of [0, 0.012, 0.024])
+          noise({ when: t + o, dur: 0.16, vol: 0.06, hp: 1400, lp: 7000, out: musicBus, sends: [[revIn, 0.7]] });
+        return;
+      }
+      const lofi = kind === "lofi";
+      noise({ when: t, dur: lofi ? 0.2 : 0.3, vol: lofi ? 0.06 : 0.09, hp: 1000, lp: lofi ? 4000 : 6000,
+              out: musicBus, sends: [[revIn, lofi ? 0.5 : 1]] });
       osc({ type: "triangle", f: 190, f2: 150, when: t, dur: 0.1, vol: 0.06, out: musicBus });
     }
+    const hat = (t, vol, hp, dur, pan) => noise({ when: t, dur, vol, hp, out: musicBus, pan });
 
     function scheduleStep(n, t) {
       const sd = 60 / bpm / 4;
       const s = n % 16, bar = Math.floor(n / 16) % 4, cycle = Math.floor(n / 64);
-      const P = PROG[bar];
+      const P = style.prog[bar];
       const intro = cycle === 0 && bar === 0;
+      if (style.drums === "shuffle" && s % 2 === 1) t += sd * 0.28;   // swing the offbeats
 
-      // Four-on-the-floor drive with offbeat open hats and a 16th shaker
       if (!intro) {
-        if (s % 4 === 0) kick(t);
-        if (s === 4 || s === 12) snare(t);
-        if (s % 4 === 2) noise({ when: t, dur: 0.11, vol: 0.035, hp: 6500, out: musicBus, pan: 0.2 });
-        noise({ when: t, dur: 0.025, vol: s % 2 ? 0.012 : 0.007, hp: 9000, out: musicBus, pan: -0.25 });
+        if (style.drums === "four") {
+          if (s % 4 === 0) kick(t);
+          if (s === 4 || s === 12) snare(t);
+          if (s % 4 === 2) hat(t, 0.035, 6500, 0.11, 0.2);
+          hat(t, s % 2 ? 0.012 : 0.007, 9000, 0.025, -0.25);
+        } else if (style.drums === "pop") {
+          if (s === 0 || s === 6 || s === 8 || s === 14) kick(t);
+          if (s === 4 || s === 12) snare(t, "clap");
+          if (s % 2 === 0) hat(t, s % 4 === 2 ? 0.04 : 0.02, 8000, 0.04, s % 4 === 2 ? 0.25 : -0.2);
+        } else if (style.drums === "lofi") {
+          if (s === 0 || s === 10) kick(t, true);
+          if (s === 4 || s === 12) snare(t, "lofi");
+          if (s % 4 === 2) hat(t, 0.025, 7000, 0.06, 0.15);
+        } else if (style.drums === "shuffle") {
+          if (s === 0 || s === 8) kick(t);
+          if (s === 4 || s === 12) snare(t, "clap");
+          hat(t, s % 2 ? 0.02 : 0.03, s % 2 ? 9000 : 7500, s % 2 ? 0.03 : 0.05, s % 2 ? -0.2 : 0.2);
+        }
       }
 
-      // Driving octave bass on 8ths
-      if (s % 2 === 0) {
+      // bass
+      if (style.bass === "octave" && s % 2 === 0) {
         const note = P.root + (s % 4 === 2 ? 12 : 0);
         osc({ f: mtof(note), when: t, dur: sd * 1.5, vol: intro ? 0.12 : 0.19, attack: 0.008, out: musicBus });
-        osc({ type: "sawtooth", f: mtof(note + 12), when: t, dur: sd * 1.4, vol: 0.05, cutoff: 900, cutoff2: 260, q: 3,
-              out: musicBus });
+        osc({ type: "sawtooth", f: mtof(note + 12), when: t, dur: sd * 1.4, vol: 0.05, cutoff: 900, cutoff2: 260,
+              q: 3, out: musicBus });
+      } else if (style.bass === "bouncy" && [0, 6, 8, 11, 14].includes(s)) {
+        osc({ f: mtof(P.root + (s >= 8 ? 12 : 0)), when: t, dur: sd * 1.6, vol: 0.18, attack: 0.01, out: musicBus });
+      } else if (style.bass === "simple" && (s === 0 || s === 8)) {
+        osc({ f: mtof(P.root), when: t, dur: sd * 6, vol: 0.2, attack: 0.02, out: musicBus });
+      } else if (style.bass === "walking" && s % 4 === 0) {
+        const walk = [0, 4, 7, 9][(s / 4) % 4];
+        osc({ f: mtof(P.root + walk), when: t, dur: sd * 3.2, vol: 0.17, attack: 0.01, out: musicBus });
+        osc({ type: "triangle", f: mtof(P.root + walk + 12), when: t, dur: sd * 2, vol: 0.03, out: musicBus });
       }
 
-      // Warm, wide pad
-      if (s === 0) {
+      // wide pad
+      if (s === 0 && style.pad) {
         P.chord.forEach((m, i) => {
           for (const [dt, pan] of [[-10, -0.5], [10, 0.5]]) {
             osc({ type: "sawtooth", f: mtof(m), detune: dt + (i - 1.5) * 2, when: t, dur: sd * 16 + 0.8,
-                  vol: 0.016, attack: 0.9, hold: true, release: 0.8, cutoff: 1100, pan,
+                  vol: style.pad, attack: 0.9, hold: true, release: 0.8, cutoff: 1100, pan,
                   out: padBus, sends: [[revIn, 0.6]] });
           }
         });
       }
 
-      // Electric piano chords, gently syncopated
-      if (s === 0 || s === 10) {
+      // electric piano (organ-ish in the lounge)
+      if (style.ep && (s === 0 || s === 10 || (style.drums === "shuffle" && s === 6))) {
         P.chord.forEach((m, i) =>
-          fm({ f: mtof(m), ratio: 1, index: 1.3, when: t + i * 0.012, dur: 1.8, vol: s === 0 ? 0.035 : 0.022,
+          fm({ f: mtof(m), ratio: style.drums === "shuffle" ? 2 : 1, index: 1.3, when: t + i * 0.012,
+               dur: style.drums === "lofi" ? 2.4 : 1.6, vol: s === 0 ? style.ep : style.ep * 0.6,
                pan: (i - 1.5) * 0.15, out: musicBus, sends: [[revIn, 0.35]] }));
       }
 
-      // Bright 16th-note arpeggio with echo
-      {
-        const order = [0, 2, 3, 1];
-        const m = P.chord[order[s % 4]] + 12 + (s >= 8 && s % 4 === 3 ? 12 : 0);
+      // sparkle on top
+      if (style.arp === "tri") {
+        const m = P.chord[[0, 2, 3, 1][s % 4]] + 12 + (s >= 8 && s % 4 === 3 ? 12 : 0);
         osc({ type: "triangle", f: mtof(m), when: t, dur: sd * 0.95, vol: 0.026, cutoff: 2600,
               pan: s % 2 ? 0.45 : -0.45, out: musicBus, sends: [[dlyIn, 0.4]] });
+      } else if (style.arp === "pluck" && s % 2 === 0) {
+        const m = P.chord[[0, 2, 1, 3][(s / 2) % 4]] + 12;
+        fm({ f: mtof(m), ratio: 2.01, index: 1.6, when: t, dur: sd * 1.2, vol: 0.03,
+             pan: (s / 2) % 2 ? 0.4 : -0.4, out: musicBus, sends: [[dlyIn, 0.35]] });
+      } else if (style.arp === "bell" && s % 2 === 0) {
+        const m = P.chord[[0, 1, 2, 3][(s / 2) % 4]] + 12;
+        fm({ f: mtof(m), ratio: 3.01, index: 0.9, when: t, dur: sd * 1.6, vol: 0.028,
+             pan: (s / 2) % 2 ? 0.35 : -0.35, out: musicBus, sends: [[dlyIn, 0.4], [revIn, 0.3]] });
       }
 
-      // Lead melody every other loop
-      if (cycle % 2 === 1) {
-        for (const [at, m, len] of LEAD[bar]) {
+      // lead melody every other loop
+      const lead = style.lead && LEADS[styleName];
+      if (lead && cycle % 2 === 1) {
+        for (const [at, m, len] of lead[bar]) {
           if (s !== at) continue;
           const dur = sd * len;
           osc({ f: mtof(m), when: t, dur, vol: 0.045, attack: 0.06, hold: true, release: 0.25, vib: 4,
@@ -1730,6 +1802,14 @@
       startMusic() { wantMusic = true; step = 0; sync(); },
       resumeMusic() { wantMusic = true; sync(); },
       stopMusic() { wantMusic = false; sync(); },
+      // each game gets its own soundtrack
+      setStyle(name, bpmOverride) {
+        if (!STYLES[name]) return;
+        styleName = name;
+        style = STYLES[name];
+        this.setBpm(bpmOverride || style.bpm);
+        step = 0;
+      },
       setBpm(b) {
         bpm = b;
         if (dly) dly.delayTime.setTargetAtTime((60 / bpm) * 0.75, ctx.currentTime, 0.1);
@@ -2059,7 +2139,7 @@
           for (let x = 0; x < COLS; x++)
             burst(x * s, (y - HIDDEN) * s, s, COLORS[st.board[y][x]], n >= 4 ? 7 : 4);
         if (st.level > before) {
-          snd.setBpm(Math.min(108 + (st.level - 1) * 2, 132));
+          snd.setStyle("synthwave", Math.min(108 + (st.level - 1) * 2, 132));
           setTimeout(() => { if (game === "classic" && mode !== "over") { showToast(`Level ${st.level}`); snd.sfx.levelUp(); } }, 700);
         }
       } else {
@@ -2079,7 +2159,7 @@
       st.queue = []; st.holdType = null; st.canHold = true;
       st.level = st.startLevel; st.clearing = null;
       st.softHeld = st.leftHeld = st.rightHeld = false; st.dir = 0;
-      snd.setBpm(Math.min(108 + (st.level - 1) * 2, 132));
+      snd.setStyle("synthwave", Math.min(108 + (st.level - 1) * 2, 132));
       spawn(takeNext());
     }
 
@@ -2389,7 +2469,7 @@
       st.combo = 0; st.miss = 0; st.drag = null; st.kb = null; st.fading = [];
       clearTimeout(st.endTimer);
       st.tray = makeTray();
-      snd.setBpm(116);
+      snd.setStyle("bounce");
     }
 
     function place(idx, row, col) {
@@ -3663,52 +3743,100 @@
       rctx.stroke();
       drawParticles(rctx);
 
-      // wheel
-      const W = wheelCanvas.width, R = W / 2 - 6 * dpr, cx = W / 2, cy = W / 2;
+      // ---- bonus wheel ----
+      const W = wheelCanvas.width, cx = W / 2, cy = W / 2;
+      const rim = W / 2 - 3 * dpr, R = rim - 9 * dpr;
+      const lit = wheel.live || wheel.spinning;
       wctx.clearRect(0, 0, W, wheelCanvas.height);
       const seg = TAU / WEDGES.length;
+
+      // outer case
+      wctx.beginPath();
+      wctx.arc(cx, cy, rim, 0, TAU);
+      const caseGrad = wctx.createLinearGradient(0, 0, 0, W);
+      caseGrad.addColorStop(0, lit ? "#ffe98a" : "#6c5a2e");
+      caseGrad.addColorStop(0.5, lit ? "#ffb703" : "#4b3f22");
+      caseGrad.addColorStop(1, lit ? "#c98800" : "#3a3019");
+      wctx.fillStyle = caseGrad;
+      wctx.fill();
+
       wctx.save();
       wctx.translate(cx, cy);
       wctx.rotate(wheel.angle);
       WEDGES.forEach((p, i) => {
+        const base = WEDGE_COLORS[i % WEDGE_COLORS.length];
+        const a0 = i * seg, a1 = (i + 1) * seg;
         wctx.beginPath();
         wctx.moveTo(0, 0);
-        wctx.arc(0, 0, R, i * seg, (i + 1) * seg);
+        wctx.arc(0, 0, R, a0, a1);
         wctx.closePath();
-        wctx.fillStyle = wheel.live || wheel.spinning ? WEDGE_COLORS[i % WEDGE_COLORS.length] : shadeHex(WEDGE_COLORS[i % WEDGE_COLORS.length], -0.45);
+        const mid = (a0 + a1) / 2;
+        const g = wctx.createLinearGradient(Math.cos(mid) * R * 0.1, Math.sin(mid) * R * 0.1,
+                                            Math.cos(mid) * R, Math.sin(mid) * R);
+        g.addColorStop(0, shadeHex(base, lit ? -0.18 : -0.6));
+        g.addColorStop(1, shadeHex(base, lit ? 0.12 : -0.45));
+        wctx.fillStyle = g;
         wctx.fill();
-        wctx.strokeStyle = "rgba(0,0,0,0.35)";
-        wctx.lineWidth = 2 * dpr;
+        wctx.strokeStyle = lit ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.18)";
+        wctx.lineWidth = 1.5 * dpr;
         wctx.stroke();
+
         wctx.save();
-        wctx.rotate((i + 0.5) * seg);
-        wctx.fillStyle = p.t === "JACKPOT" ? "#fff" : "rgba(20,10,30,0.85)";
-        wctx.font = `700 ${(p.t.length > 5 ? 13 : 17) * dpr}px "Fredoka", sans-serif`;
+        wctx.rotate(mid);
+        const jackpot = p.t === "JACKPOT";
+        wctx.font = `700 ${(p.t.length > 5 ? 12.5 : 18) * dpr}px "Fredoka", sans-serif`;
         wctx.textAlign = "right";
         wctx.textBaseline = "middle";
-        wctx.fillText(p.t, R - 10 * dpr, 0);
+        wctx.lineWidth = 3 * dpr;
+        wctx.strokeStyle = "rgba(25,8,35,0.55)";
+        wctx.strokeText(p.t, R - 12 * dpr, 0);
+        wctx.fillStyle = jackpot && lit ? "#fff6c9" : "#fff";
+        wctx.fillText(p.t, R - 12 * dpr, 0);
         wctx.restore();
       });
-      wctx.beginPath();
-      wctx.arc(0, 0, R * 0.17, 0, TAU);
-      wctx.fillStyle = "#ffd23f";
-      wctx.fill();
       wctx.restore();
-      // rim + pointer
+
+      // bulbs around the rim, chasing while the wheel turns
+      const bulbs = 24;
+      for (let i = 0; i < bulbs; i++) {
+        const a = (i / bulbs) * TAU - Math.PI / 2;
+        const bx = cx + Math.cos(a) * (rim - 4.5 * dpr), by = cy + Math.sin(a) * (rim - 4.5 * dpr);
+        const chase = wheel.spinning ? (i + Math.floor(wheel.angle * 3)) % 3 === 0
+                    : lit ? (i + Math.floor(performance.now() / 320)) % 3 === 0 : false;
+        wctx.beginPath();
+        wctx.arc(bx, by, 3.2 * dpr, 0, TAU);
+        wctx.fillStyle = chase ? "#fffbe0" : lit ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.18)";
+        wctx.fill();
+      }
+
+      // hub
       wctx.beginPath();
-      wctx.arc(cx, cy, R + 3 * dpr, 0, TAU);
-      wctx.strokeStyle = "#ffd23f";
-      wctx.lineWidth = 5 * dpr;
+      wctx.arc(cx, cy, R * 0.18, 0, TAU);
+      const hub = wctx.createRadialGradient(cx - R * 0.06, cy - R * 0.07, R * 0.02, cx, cy, R * 0.2);
+      hub.addColorStop(0, lit ? "#fff7cf" : "#8c7a4a");
+      hub.addColorStop(1, lit ? "#e0a800" : "#4b4128");
+      wctx.fillStyle = hub;
+      wctx.fill();
+      wctx.strokeStyle = "rgba(0,0,0,0.35)";
+      wctx.lineWidth = 2 * dpr;
       wctx.stroke();
+
+      // pointer
       wctx.beginPath();
-      wctx.moveTo(cx - 12 * dpr, 2 * dpr);
-      wctx.lineTo(cx + 12 * dpr, 2 * dpr);
-      wctx.lineTo(cx, 30 * dpr);
+      wctx.moveTo(cx - 13 * dpr, 1 * dpr);
+      wctx.lineTo(cx + 13 * dpr, 1 * dpr);
+      wctx.lineTo(cx, 34 * dpr);
       wctx.closePath();
       wctx.fillStyle = "#fff";
+      wctx.shadowColor = "rgba(0,0,0,0.5)";
+      wctx.shadowBlur = 8 * dpr;
+      wctx.shadowOffsetY = 2 * dpr;
       wctx.fill();
-      wctx.strokeStyle = "rgba(0,0,0,0.4)";
-      wctx.lineWidth = 2 * dpr;
+      wctx.shadowColor = "transparent";
+      wctx.shadowBlur = 0;
+      wctx.shadowOffsetY = 0;
+      wctx.strokeStyle = "#c98800";
+      wctx.lineWidth = 2.5 * dpr;
       wctx.stroke();
     }
     function shadeHex(hex, amt) {
@@ -4196,56 +4324,116 @@
 
     function drawCandy(ctx, candy, x, y, s) {
       const art = CANDY[candy.c];
+      const bomb = candy.s === "bomb";
       ctx.save();
       if (candy.sc !== 1) {
         ctx.translate(x + s / 2, y + s / 2);
         ctx.scale(candy.sc, candy.sc);
         ctx.translate(-x - s / 2, -y - s / 2);
       }
-      ctx.fillStyle = candy.s === "bomb" ? "#2b2140" : art.fill;
-      candyPath(ctx, candy.s === "bomb" ? "circle" : art.shape, x, y, s);
-      ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.25)";
-      ctx.lineWidth = Math.max(1, s * 0.03);
-      ctx.stroke();
-      // shine
-      ctx.fillStyle = "rgba(255,255,255,0.45)";
+
+      // soft shadow on the tile below
+      ctx.fillStyle = "rgba(40,0,45,0.28)";
       ctx.beginPath();
-      ctx.ellipse(x + s * 0.36, y + s * 0.32, s * 0.12, s * 0.08, -0.6, 0, Math.PI * 2);
+      ctx.ellipse(x + s / 2, y + s * 0.88, s * 0.3, s * 0.09, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      const base = bomb ? "#3a2b52" : art.fill;
+      candyPath(ctx, bomb ? "circle" : art.shape, x, y, s);
+      const g = ctx.createRadialGradient(x + s * 0.36, y + s * 0.3, s * 0.05, x + s * 0.5, y + s * 0.55, s * 0.55);
+      g.addColorStop(0, shadeC(base, 0.45));
+      g.addColorStop(0.55, base);
+      g.addColorStop(1, shadeC(base, -0.3));
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.strokeStyle = shadeC(base, -0.45);
+      ctx.lineWidth = Math.max(1, s * 0.035);
+      ctx.stroke();
+
+      // gloss
+      ctx.save();
+      candyPath(ctx, bomb ? "circle" : art.shape, x, y, s);
+      ctx.clip();
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.37, y + s * 0.3, s * 0.17, s * 0.1, -0.7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.14)";
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.5, y + s * 0.25, s * 0.34, s * 0.16, 0, 0, Math.PI * 2);
+      ctx.fill();
+
       if (candy.s === "row" || candy.s === "col") {
-        ctx.strokeStyle = "rgba(255,255,255,0.85)";
-        ctx.lineWidth = Math.max(2, s * 0.06);
-        for (const o of [-0.16, 0, 0.16]) {
+        ctx.strokeStyle = "rgba(255,255,255,0.9)";
+        ctx.lineWidth = Math.max(2, s * 0.08);
+        ctx.lineCap = "round";
+        for (const o of [-0.18, 0, 0.18]) {
           ctx.beginPath();
-          if (candy.s === "row") { ctx.moveTo(x + s * 0.18, y + s * (0.5 + o)); ctx.lineTo(x + s * 0.82, y + s * (0.5 + o)); }
-          else { ctx.moveTo(x + s * (0.5 + o), y + s * 0.18); ctx.lineTo(x + s * (0.5 + o), y + s * 0.82); }
+          if (candy.s === "row") { ctx.moveTo(x + s * 0.1, y + s * (0.5 + o)); ctx.lineTo(x + s * 0.9, y + s * (0.5 + o)); }
+          else { ctx.moveTo(x + s * (0.5 + o), y + s * 0.1); ctx.lineTo(x + s * (0.5 + o), y + s * 0.9); }
           ctx.stroke();
-        }
-      } else if (candy.s === "bomb") {
-        for (let i = 0; i < 8; i++) {
-          const a = (i * Math.PI) / 4, rr = s * 0.3;
-          ctx.fillStyle = CANDY[i % COLORS].fill;
-          ctx.beginPath();
-          ctx.arc(x + s / 2 + Math.cos(a) * rr, y + s / 2 + Math.sin(a) * rr, s * 0.07, 0, Math.PI * 2);
-          ctx.fill();
         }
       }
       ctx.restore();
+
+      if (bomb) {
+        for (let i = 0; i < 10; i++) {
+          const a = (i * Math.PI) / 5 + 0.3, rr = s * (i % 2 ? 0.2 : 0.3);
+          ctx.fillStyle = CANDY[i % COLORS].fill;
+          ctx.beginPath();
+          ctx.arc(x + s / 2 + Math.cos(a) * rr, y + s / 2 + Math.sin(a) * rr, s * 0.055, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "rgba(255,255,255,0.75)";
+        ctx.beginPath();
+        ctx.arc(x + s * 0.36, y + s * 0.32, s * 0.06, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // lighten or darken a hex colour
+    const shadeCache2 = new Map();
+    function shadeC(hex, amt) {
+      const key = hex + amt;
+      if (shadeCache2.has(key)) return shadeCache2.get(key);
+      const n = parseInt(hex.slice(1), 16);
+      let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+      const t = amt > 0 ? 255 : 0, a = Math.abs(amt);
+      r = Math.round(r + (t - r) * a); g = Math.round(g + (t - g) * a); b = Math.round(b + (t - b) * a);
+      const out = `rgb(${r},${g},${b})`;
+      shadeCache2.set(key, out);
+      return out;
     }
 
     function draw() {
       const s = cell * dpr, W = N * s;
       sctx.clearRect(0, 0, canvas.width, canvas.height);
+      const pad = s * 0.06, rad = s * 0.22;
       for (let r = 0; r < N; r++)
         for (let c = 0; c < N; c++) {
-          sctx.fillStyle = (r + c) % 2 ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)";
-          sctx.fillRect(c * s, r * s, s, s);
+          sctx.fillStyle = (r + c) % 2 ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.05)";
+          sctx.beginPath();
+          const x0 = c * s + pad, y0 = r * s + pad, w0 = s - pad * 2;
+          sctx.moveTo(x0 + rad, y0);
+          sctx.arcTo(x0 + w0, y0, x0 + w0, y0 + w0, rad);
+          sctx.arcTo(x0 + w0, y0 + w0, x0, y0 + w0, rad);
+          sctx.arcTo(x0, y0 + w0, x0, y0, rad);
+          sctx.arcTo(x0, y0, x0 + w0, y0, rad);
+          sctx.closePath();
+          sctx.fill();
         }
       if (pick) {
-        sctx.strokeStyle = "#fff";
-        sctx.lineWidth = Math.max(2, s * 0.06);
-        sctx.strokeRect(pick[1] * s + 2, pick[0] * s + 2, s - 4, s - 4);
+        const px = pick[1] * s, py = pick[0] * s;
+        sctx.save();
+        sctx.strokeStyle = "rgba(255,255,255,0.95)";
+        sctx.lineWidth = Math.max(2, s * 0.07);
+        sctx.shadowColor = "rgba(255,255,255,0.8)";
+        sctx.shadowBlur = s * 0.25;
+        sctx.beginPath();
+        sctx.arc(px + s / 2, py + s / 2, s * 0.44, 0, Math.PI * 2);
+        sctx.stroke();
+        sctx.restore();
       }
       for (let r = 0; r < N; r++)
         for (let c = 0; c < N; c++) {
@@ -4424,7 +4612,7 @@
     document.body.classList.remove("mode-blast", "mode-slots", "mode-sweet");
     document.body.classList.add("mode-ladder");
     snd.init();
-    snd.setBpm(100);
+    snd.setStyle("lofi");
     snd.startMusic();
     LL.enter();
   }
@@ -4433,7 +4621,7 @@
     document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots");
     document.body.classList.add("mode-sweet");
     snd.init();
-    snd.setBpm(108);
+    snd.setStyle("bubbly");
     snd.startMusic();
     SW.enter();
   }
@@ -4442,7 +4630,7 @@
     document.body.classList.remove("mode-blast", "mode-ladder", "mode-sweet");
     document.body.classList.add("mode-slots");
     snd.init();
-    snd.setBpm(112);
+    snd.setStyle("lounge");
     snd.startMusic();
     S.enter();
   }
