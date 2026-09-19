@@ -900,6 +900,101 @@
   .seg-4 { grid-template-columns: repeat(4, 1fr); }
   .seg-4 button { font-size: 12px; padding: 6px 2px; }
 
+  /* Sweet Swap */
+  body.mode-sweet {
+    --ground: #6a2c7a;
+    --muted: #f3d9f7;
+    background: linear-gradient(180deg, #ff7ab8 0%, #a34898 42%, #5b2270 100%) fixed;
+  }
+  .sweet { display: none; }
+  .view-sweet .sweet { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 460px; }
+  .view-sweet .game, .view-sweet .blast-score, .view-sweet .blast-hint, .view-sweet .gesture-hint,
+  .view-sweet .ladder, .view-sweet .slots, .view-hub .sweet, .view-play .sweet,
+  .view-ladder .sweet, .view-slots .sweet { display: none !important; }
+  .view-sweet #pauseBtn { display: none; }
+  .mode-sweet header { justify-content: flex-end; }
+  .mode-sweet .wordmark { display: none; }
+  .mode-sweet .ghost-btn { background: rgba(255, 255, 255, 0.22); border-color: transparent; color: #fff; }
+  .tile-sweet { background: linear-gradient(160deg, #e0559f, #6a2c7a); }
+
+  .sweet-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: 19px;
+    color: #fff;
+  }
+  .sweet-moves b { font-size: 22px; }
+  .sweet-goal { display: flex; align-items: center; gap: 10px; width: 100%; }
+  .sweet-bar { flex: 1; height: 12px; border-radius: 999px; background: rgba(0, 0, 0, 0.28); overflow: hidden; }
+  .sweet-bar span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffd23f, #3ddc84);
+    transition: width 0.3s;
+  }
+  .sweet-score { font-family: "Fredoka", var(--body); font-size: 14px; color: #fff; font-variant-numeric: tabular-nums; }
+  #sweetBoard {
+    display: block;
+    border-radius: 14px;
+    background: rgba(60, 10, 60, 0.35);
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.25);
+    touch-action: none;
+  }
+  .mode-sweet .primary {
+    background: #ffd23f;
+    color: #6a2c7a;
+    box-shadow: 0 3px 0 #b38a12;
+    font-family: "Fredoka", var(--body);
+    border-radius: 999px;
+  }
+  .mode-sweet .modal-card { background: #7c2f86; border-color: rgba(255, 255, 255, 0.25); }
+  .mode-sweet .ladder-btn { background: rgba(255, 255, 255, 0.22); }
+
+  /* the level trail */
+  .sweet-map {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px 0;
+  }
+  .map-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-family: "Fredoka", var(--body);
+    font-weight: 700;
+    font-size: 20px;
+    color: #6a2c7a;
+    background: #ffd23f;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  }
+  .map-node.done { background: #3ddc84; color: #0b3d22; }
+  .map-node.current { background: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3), 0 0 0 5px rgba(255, 255, 255, 0.45); animation: bonuspulse 1.4s ease-in-out infinite; }
+  .map-node.locked { background: rgba(255, 255, 255, 0.28); color: rgba(255, 255, 255, 0.75); box-shadow: none; }
+  .map-node.rush {
+    width: 58px;
+    height: 58px;
+    background: linear-gradient(160deg, #fff3b0, #ffb703);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.4);
+  }
+  .map-node.rush.locked { background: rgba(255, 255, 255, 0.3); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25); }
+  .map-node.rush.done { background: linear-gradient(160deg, #b9ffd8, #3ddc84); }
+  @media (prefers-reduced-motion: reduce) { .map-node.current { animation: none; } }
+  .seg-5 { grid-template-columns: repeat(5, 1fr); }
+  .seg-5 button { font-size: 11px; padding: 6px 1px; }
+
   /* Cheers ("Sweet!", "Awesome!") */
   .cheer {
     position: fixed;
@@ -1005,6 +1100,19 @@
         <span class="tile-sub" id="hubSlots">Slots &amp; bonus wheel</span>
         <span class="tile-king" id="kingSlots"></span>
       </button>
+      <button class="hub-tile tile-sweet" type="button" data-go="sweet">
+        <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
+          <circle cx="14" cy="13" r="9" fill="#ef5b52"/>
+          <rect x="24" y="4" width="17" height="17" rx="5" fill="#ffd23f"/>
+          <path d="M52 4 L60 13 L52 22 L44 13 Z" fill="#2ec4f1"/>
+          <circle cx="46" cy="33" r="9" fill="#ff8fb5"/>
+          <path d="M14 24 L23 33 L14 42 L5 33 Z" fill="#b15cff"/>
+          <circle cx="30" cy="33" r="8" fill="#3ddc84"/>
+        </svg>
+        <span class="tile-name">Sweet Swap</span>
+        <span class="tile-sub" id="hubSweet">Match three</span>
+        <span class="tile-king" id="kingSweet"></span>
+      </button>
       <button class="hub-tile tile-ladder" type="button" data-go="ladder">
         <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
           <circle cx="30" cy="22" r="20" fill="rgba(255,255,255,0.18)"/>
@@ -1052,6 +1160,32 @@
         <label for="slotName">Your name for the <span class="board-name">family board</span></label>
         <div class="save-row">
           <input id="slotName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
+          <button class="primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sweet" id="sweet" aria-label="Sweet Swap">
+    <div class="sweet-map" id="sweetMap" aria-label="Level trail"></div>
+    <div class="sweet-play" id="sweetPlay" hidden>
+      <div class="sweet-top">
+        <span class="sweet-level" id="sweetLevel">Level 1</span>
+        <span class="sweet-moves"><b id="sweetMoves">25</b> moves</span>
+        <button class="ladder-btn" id="sweetMapBtn" type="button">Map</button>
+      </div>
+      <div class="sweet-goal">
+        <div class="sweet-bar"><span id="sweetBar"></span></div>
+        <span class="sweet-score" id="sweetScore">0 / 1,200</span>
+      </div>
+      <canvas id="sweetBoard" aria-label="Candy board"></canvas>
+      <p class="ladder-msg" id="sweetMsg"></p>
+    </div>
+    <div id="sweetSave" hidden>
+      <form class="save-form" id="sweetSaveForm">
+        <label for="sweetName">Your name for the <span class="board-name">family board</span></label>
+        <div class="save-row">
+          <input id="sweetName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
           <button class="primary" type="submit">Save</button>
         </div>
       </form>
@@ -1189,11 +1323,12 @@
       <h2 id="boardTitle">Family leaderboard</h2>
       <button class="link-btn" id="boardClose" type="button">Close</button>
     </div>
-    <div class="seg seg-4" id="boardModeSeg">
+    <div class="seg seg-5" id="boardModeSeg">
       <button type="button" data-mode="classic" aria-pressed="false">Classic</button>
       <button type="button" data-mode="blast" aria-pressed="true">Blast</button>
       <button type="button" data-mode="ladder" aria-pressed="false">Ladder</button>
       <button type="button" data-mode="slots" aria-pressed="false">Spin</button>
+      <button type="button" data-mode="sweet" aria-pressed="false">Sweet</button>
     </div>
     <div class="seg" id="boardRangeSeg">
       <button type="button" data-range="week" aria-pressed="true">This week</button>
@@ -1201,6 +1336,15 @@
     </div>
     <ol class="board-list" id="boardList"></ol>
     <p class="board-status" id="boardStatus"></p>
+  </div>
+</div>
+
+<div class="modal" id="sweetDone" role="dialog" aria-modal="true" aria-labelledby="sweetDoneTitle" hidden>
+  <div class="modal-card ld-done">
+    <h2 id="sweetDoneTitle">Level complete!</h2>
+    <p class="ld-done-note" id="sweetDoneNote"></p>
+    <button class="primary big-play" id="sweetNext" type="button">Next level</button>
+    <button class="link-btn" id="sweetDoneMap" type="button">Back to the map</button>
   </div>
 </div>
 
@@ -2619,10 +2763,12 @@
     if (mode !== "pause") {
       updateFx(dt);
       if (view === "slots") S.tick(dt);
+      else if (view === "sweet") SW.tick(dt);
       else if (game === "classic") C.update(dt);
       else B.update(dt);
     }
     if (view === "slots") S.draw();
+    else if (view === "sweet") SW.draw();
     else if (game === "classic") C.draw();
     else B.draw();
     const lock = mode === "play" || mode === "clear" || mode === "ending";
@@ -2674,11 +2820,11 @@
 
   // ---- Stealable crowns: the all-time #1 in each game holds the crown ----
   const CROWN_KEY = GROUP === "family" ? "brickfall-crowns" : `brickfall-crowns:${GROUP}`;
-  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder", slots: "Spin to Win" };
-  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder", slots: "kingSlots" };
+  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder", slots: "Spin to Win", sweet: "Sweet Swap" };
+  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder", slots: "kingSlots", sweet: "kingSweet" };
   const CROWN_SVG = '<svg viewBox="0 0 34 27" aria-hidden="true"><path d="M3 8 L10 14 L17 3 L24 14 L31 8 L28 21 H6 Z" fill="#ffd23f" stroke="#e0a800" stroke-width="1.5" stroke-linejoin="round"/><rect x="6" y="22" width="22" height="4" rx="2" fill="#e0a800"/></svg>';
   const kings = {};
-  const fmtScore = (mode, pts) => mode === "ladder" ? `Level ${pts}` : pts.toLocaleString();
+  const fmtScore = (mode, pts) => mode === "ladder" || mode === "sweet" ? `Level ${pts}` : pts.toLocaleString();
 
   function seenCrowns() {
     try { return JSON.parse(store.get(CROWN_KEY)) || {}; } catch (e) { return {}; }
@@ -2844,7 +2990,7 @@
         if (me && sameName(r.name, me)) li.className = "me";
         const rank = document.createElement("span"); rank.className = "rank"; rank.textContent = i + 1;
         const who = document.createElement("span"); who.className = "who"; who.textContent = r.name;
-        const pts = document.createElement("span"); pts.className = "pts"; pts.textContent = boardMode === "ladder" ? `Level ${r.score}` : r.score.toLocaleString();
+        const pts = document.createElement("span"); pts.className = "pts"; pts.textContent = fmtScore(boardMode, r.score);
         li.append(rank, who, pts);
         list.append(li);
       });
@@ -2857,7 +3003,7 @@
 
   function openBoard() {
     boardOpener = document.activeElement;
-    boardMode = view === "ladder" ? "ladder" : view === "slots" ? "slots" : game;
+    boardMode = view === "ladder" ? "ladder" : view === "slots" ? "slots" : view === "sweet" ? "sweet" : game;
     syncSeg();
     $("boardModal").hidden = false;
     $("boardClose").focus();
@@ -3682,13 +3828,568 @@
     return { enter, leave, key, size, draw, tick, get best() { return st.best; }, get chips() { return st.chips; } };
   })();
 
+
+
+  // =====================================================================
+  // Sweet Swap (match-3)
+  // =====================================================================
+  const SW = (() => {
+    const N = 8, COLORS = 6;
+    const CANDY = [
+      { fill: "#ef5b52", shape: "circle" },
+      { fill: "#ffd23f", shape: "square" },
+      { fill: "#3ddc84", shape: "drop" },
+      { fill: "#2ec4f1", shape: "diamond" },
+      { fill: "#b15cff", shape: "hex" },
+      { fill: "#ff8fb5", shape: "flower" }
+    ];
+    const SWAP_TIME = 0.16, CLEAR_TIME = 0.22;
+    const SWEET_CHEERS = [
+      ["Sweet!", "Tasty!", "Yummy!", "Mmm!", "Nice one!"],
+      ["Scrumptious!", "Delicious!", "Sugar rush!", "Sweet as!", "Tasty!"],
+      ["Sugar rush!", "Candy storm!", "Unbelievable!", "Sweetacular!", "Mega sweet!"]
+    ];
+    const sweetCheer = tier => {
+      const list = SWEET_CHEERS[Math.max(0, Math.min(2, tier - 1))];
+      cheer(tier, list[Math.floor(Math.random() * list.length)]);
+    };
+    const canvas = $("sweetBoard"), sctx = canvas.getContext("2d");
+
+    let st = load();
+    let grid = [], cell = 40, phase = "idle", timer = 0, combo = 0;
+    let pick = null, drag = null, swapAnim = null, clearing = [], pendingSpecials = [];
+
+    function fresh() { return { level: 1, best: 0 }; }
+    function load() {
+      try {
+        const s = JSON.parse(store.get("brickfall-sweet"));
+        if (s && s.level >= 1) return Object.assign(fresh(), s);
+      } catch (e) {}
+      return fresh();
+    }
+    function save() { store.set("brickfall-sweet", JSON.stringify(st)); }
+
+    // Levels never run out: the goal climbs, then levels off so far-away levels stay beatable.
+    // Every fifth level is a Sugar Rush: a bigger goal, but extra moves and five candy colours.
+    const isRush = lvl => lvl % 5 === 0;
+    const goalFor = lvl => Math.round(Math.min(2400 + 700 * Math.pow(lvl - 1, 0.7), 9000) * (isRush(lvl) ? 1.25 : 1));
+    const movesFor = lvl => (lvl <= 3 ? 25 : 22) + (isRush(lvl) ? 6 : 0);
+    const colorsFor = lvl => (lvl <= 4 || isRush(lvl) ? 5 : 6);
+    let moves = 0, target = 0, points = 0, playing = 1;
+
+    // ---- board helpers ----
+    const inside = (r, c) => r >= 0 && r < N && c >= 0 && c < N;
+    const at = (r, c) => (inside(r, c) && grid[r] ? grid[r][c] : null);
+    const newCandy = () => ({ c: Math.floor(Math.random() * colorsFor(playing)), s: null, dy: 0, sc: 1 });
+
+    function matchesAt(r, c, colr) {
+      let h = 1, v = 1;
+      for (let i = c - 1; inside(r, i) && at(r, i) && at(r, i).c === colr; i--) h++;
+      for (let i = c + 1; inside(r, i) && at(r, i) && at(r, i).c === colr; i++) h++;
+      for (let i = r - 1; inside(i, c) && at(i, c) && at(i, c).c === colr; i--) v++;
+      for (let i = r + 1; inside(i, c) && at(i, c) && at(i, c).c === colr; i++) v++;
+      return { h, v };
+    }
+
+    function fillBoard() {
+      grid = [];
+      for (let r = 0; r < N; r++) {
+        grid.push([]);
+        for (let c = 0; c < N; c++) {
+          let candy;
+          do { candy = newCandy(); } while (matchesAt(r, c, candy.c).h >= 3 || matchesAt(r, c, candy.c).v >= 3);
+          grid[r][c] = candy;
+        }
+      }
+      if (!hasMove()) fillBoard();
+    }
+
+    // every group of 3+ in a line
+    function findGroups() {
+      const groups = [];
+      for (let r = 0; r < N; r++) {
+        let run = 1;
+        for (let c = 1; c <= N; c++) {
+          const same = c < N && at(r, c) && at(r, c - 1) && at(r, c).c === at(r, c - 1).c;
+          if (same) run++;
+          else {
+            if (run >= 3) groups.push({ cells: Array.from({ length: run }, (_, i) => [r, c - 1 - i]), dir: "h" });
+            run = 1;
+          }
+        }
+      }
+      for (let c = 0; c < N; c++) {
+        let run = 1;
+        for (let r = 1; r <= N; r++) {
+          const same = r < N && at(r, c) && at(r - 1, c) && at(r, c).c === at(r - 1, c).c;
+          if (same) run++;
+          else {
+            if (run >= 3) groups.push({ cells: Array.from({ length: run }, (_, i) => [r - 1 - i, c]), dir: "v" });
+            run = 1;
+          }
+        }
+      }
+      return groups;
+    }
+
+    function hasMove() {
+      const swapOk = (r1, c1, r2, c2) => {
+        if (!inside(r2, c2) || !at(r1, c1) || !at(r2, c2)) return false;
+        const a = grid[r1][c1], b = grid[r2][c2];
+        grid[r1][c1] = b; grid[r2][c2] = a;
+        const ok = findGroups().length > 0 || a.s === "bomb" || b.s === "bomb";
+        grid[r1][c1] = a; grid[r2][c2] = b;
+        return ok;
+      };
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++)
+          if (swapOk(r, c, r, c + 1) || swapOk(r, c, r + 1, c)) return true;
+      return false;
+    }
+
+    // ---- turns ----
+    function startLevel(lvl) {
+      playing = lvl || playing || 1;
+      $("sweetMap").hidden = true;
+      $("sweetPlay").hidden = false;
+      target = goalFor(playing);
+      moves = movesFor(playing);
+      points = 0;
+      combo = 0;
+      phase = "idle";
+      pick = null;
+      fillBoard();
+      render();
+      msg(isRush(playing) ? "Sugar Rush! Bigger goal, extra moves." : "Swap two candies to line up three or more.");
+    }
+
+    function trySwap(r1, c1, r2, c2) {
+      if (phase !== "idle" || !inside(r2, c2) || !at(r1, c1) || !at(r2, c2)) return;
+      const a = grid[r1][c1], b = grid[r2][c2];
+      grid[r1][c1] = b; grid[r2][c2] = a;
+      const bomb = a.s === "bomb" || b.s === "bomb";
+      const groups = findGroups();
+      if (!groups.length && !bomb) {
+        grid[r1][c1] = a; grid[r2][c2] = b;          // no match: bounce back
+        swapAnim = { r1, c1, r2, c2, t: 0, back: true };
+        phase = "swap";
+        snd.sfx.invalid();
+        return;
+      }
+      moves--;
+      combo = 0;
+      swapAnim = { r1, c1, r2, c2, t: 0, back: false, bomb: bomb ? { a: [r2, c2], b: [r1, c1] } : null };
+      phase = "swap";
+      snd.sfx.rotate();
+      pick = null;
+    }
+
+    // mark cells to clear, turn big matches into specials
+    function resolve(bombPair) {
+      const groups = findGroups();
+      const doomed = new Map();
+      const add = (r, c) => { if (at(r, c)) doomed.set(r * N + c, [r, c]); };
+
+      if (bombPair) {
+        const [br, bc] = bombPair.a, [tr, tc] = bombPair.b;
+        const bombCell = at(br, bc) && at(br, bc).s === "bomb" ? [br, bc] : [tr, tc];
+        const other = bombCell[0] === br && bombCell[1] === bc ? [tr, tc] : [br, bc];
+        const colr = at(other[0], other[1]) ? at(other[0], other[1]).c : -1;
+        for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (at(r, c) && at(r, c).c === colr) add(r, c);
+        add(bombCell[0], bombCell[1]);
+      }
+
+      pendingSpecials = [];
+      for (const g of groups) {
+        for (const [r, c] of g.cells) add(r, c);
+        if (g.cells.length >= 5) pendingSpecials.push({ at: g.cells[Math.floor(g.cells.length / 2)], s: "bomb", c: at(g.cells[0][0], g.cells[0][1]).c });
+        else if (g.cells.length === 4) pendingSpecials.push({ at: g.cells[1], s: g.dir === "h" ? "row" : "col", c: at(g.cells[0][0], g.cells[0][1]).c });
+      }
+
+      // striped candies caught in a match clear their whole line
+      let grew = true;
+      while (grew) {
+        grew = false;
+        for (const [r, c] of [...doomed.values()]) {
+          const cellAt = at(r, c);
+          if (!cellAt || !cellAt.s || cellAt.s === "bomb") continue;
+          if (cellAt.fired) continue;
+          cellAt.fired = true;
+          grew = true;
+          if (cellAt.s === "row") for (let i = 0; i < N; i++) add(r, i);
+          else for (let i = 0; i < N; i++) add(i, c);
+        }
+      }
+      return [...doomed.values()];
+    }
+
+    function beginClear(cells) {
+      if (!cells.length) { finishTurn(); return; }
+      combo++;
+      const gained = cells.length * 30 * combo;
+      points += gained;
+      clearing = cells;
+      const s = cell * dpr;
+      for (const [r, c] of cells) {
+        const candy = at(r, c);
+        if (candy) burst(c * s, r * s, s, CANDY[candy.c].fill, 5);
+      }
+      snd.sfx.clear(Math.min(cells.length - 2, 4), combo - 1);
+      if (combo >= 2) sweetCheer(combo >= 4 ? 3 : combo >= 3 ? 2 : 1);
+      shake(Math.min(3 + cells.length, 14));
+      phase = "clear";
+      timer = 0;
+      render();
+    }
+
+    function applyClear() {
+      for (const [r, c] of clearing) grid[r][c] = null;
+      for (const sp of pendingSpecials) {
+        const [r, c] = sp.at;
+        grid[r][c] = { c: sp.c, s: sp.s, dy: 0, sc: 1 };
+      }
+      pendingSpecials = [];
+      clearing = [];
+      // gravity, then refill from the top
+      for (let c = 0; c < N; c++) {
+        let write = N - 1;
+        for (let r = N - 1; r >= 0; r--) {
+          if (grid[r][c]) {
+            const candy = grid[r][c];
+            grid[r][c] = null;
+            candy.dy = write - r;
+            grid[write][c] = candy;
+            write--;
+          }
+        }
+        for (let r = write; r >= 0; r--) {
+          const candy = newCandy();
+          candy.dy = r + 2;
+          grid[r][c] = candy;
+        }
+      }
+      phase = "fall";
+    }
+
+    function finishTurn() {
+      combo = 0;
+      phase = "idle";
+      if (!hasMove()) { fillBoard(); msg("No moves left — board reshuffled."); }
+      if (points >= target) { levelWon(); return; }
+      if (moves <= 0) { levelLost(); return; }
+      render();
+    }
+
+    function levelWon() {
+      phase = "done";
+      st.best = Math.max(st.best, playing);
+      if (playing === st.level) st.level++;
+      save();
+      snd.sfx.big();
+      sweetCheer(3);
+      $("sweetDoneTitle").textContent = `Level ${playing} complete!`;
+      $("sweetDoneNote").textContent = `${points.toLocaleString()} points with ${moves} move${moves === 1 ? "" : "s"} to spare`;
+      $("sweetNext").textContent = "Next level";
+      $("sweetDone").hidden = false;
+      $("sweetNext").focus();
+      postLevel();
+    }
+    function levelLost() {
+      phase = "done";
+      snd.sfx.gameOver();
+      $("sweetDoneTitle").textContent = "Out of moves";
+      $("sweetDoneNote").textContent = `${points.toLocaleString()} of ${target.toLocaleString()} points — so close!`;
+      $("sweetNext").textContent = "Try again";
+      $("sweetDone").hidden = false;
+      $("sweetNext").focus();
+    }
+    async function postLevel() {
+      if (!lb.on) return;
+      const name = playerName();
+      if (!name) { $("sweetSave").hidden = false; return; }
+      try {
+        const crown = await submitWithCrown("sweet", name, st.best);
+        if (crown) { $("sweetDoneNote").textContent = crownMessage(crown, "sweet"); cheer(3); }
+      } catch (e) {}
+    }
+    $("sweetSaveForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = $("sweetName").value.trim().slice(0, 16);
+      if (!name) { $("sweetName").focus(); return; }
+      store.set("brickfall-name", name);
+      $("sweetSave").hidden = true;
+      postLevel();
+    });
+    $("sweetNext").addEventListener("click", () => {
+      $("sweetDone").hidden = true;
+      if ($("sweetNext").textContent === "Next level") playing++;
+      startLevel(playing);
+    });
+    $("sweetMapBtn").addEventListener("click", showMap);
+    $("sweetDoneMap").addEventListener("click", () => { $("sweetDone").hidden = true; showMap(); });
+
+    // ---- loop ----
+    function tick(dt) {
+      if (phase === "swap") {
+        swapAnim.t += dt;
+        if (swapAnim.t >= SWAP_TIME) {
+          const a = swapAnim;
+          swapAnim = null;
+          if (a.back) { phase = "idle"; render(); }
+          else beginClear(resolve(a.bomb));
+        }
+      } else if (phase === "clear") {
+        timer += dt;
+        for (const [r, c] of clearing) { const candy = at(r, c); if (candy) candy.sc = Math.max(0, 1 - timer / CLEAR_TIME); }
+        if (timer >= CLEAR_TIME) applyClear();
+      } else if (phase === "fall") {
+        let moving = false;
+        for (let r = 0; r < N; r++)
+          for (let c = 0; c < N; c++) {
+            const candy = grid[r][c];
+            if (!candy) continue;
+            if (Math.abs(candy.dy) > 0.01) { candy.dy -= candy.dy * Math.min(1, dt * 16); moving = true; }
+            else candy.dy = 0;
+          }
+        if (!moving) {
+          const cells = resolve(null);
+          if (cells.length) beginClear(cells);
+          else finishTurn();
+        }
+      }
+    }
+
+    // ---- drawing ----
+    function candyPath(ctx, shape, x, y, s) {
+      const m = s * 0.14, w = s - m * 2, cx = x + s / 2, cy = y + s / 2, r = w / 2;
+      ctx.beginPath();
+      if (shape === "circle") ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      else if (shape === "square") {
+        const rad = w * 0.22;
+        ctx.moveTo(x + m + rad, y + m);
+        ctx.arcTo(x + m + w, y + m, x + m + w, y + m + w, rad);
+        ctx.arcTo(x + m + w, y + m + w, x + m, y + m + w, rad);
+        ctx.arcTo(x + m, y + m + w, x + m, y + m, rad);
+        ctx.arcTo(x + m, y + m, x + m + w, y + m, rad);
+      } else if (shape === "diamond") {
+        ctx.moveTo(cx, cy - r); ctx.lineTo(cx + r, cy); ctx.lineTo(cx, cy + r); ctx.lineTo(cx - r, cy);
+      } else if (shape === "drop") {
+        ctx.moveTo(cx, cy - r);
+        ctx.quadraticCurveTo(cx + r, cy - r * 0.2, cx, cy + r);
+        ctx.quadraticCurveTo(cx - r, cy - r * 0.2, cx, cy - r);
+      } else if (shape === "hex") {
+        for (let i = 0; i < 6; i++) {
+          const a = -Math.PI / 2 + (i * Math.PI) / 3;
+          const px = cx + Math.cos(a) * r, py = cy + Math.sin(a) * r;
+          i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+      } else {
+        for (let i = 0; i < 12; i++) {
+          const rad = i % 2 ? r * 0.55 : r;
+          const a = -Math.PI / 2 + (i * Math.PI) / 6;
+          const px = cx + Math.cos(a) * rad, py = cy + Math.sin(a) * rad;
+          i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+      }
+      ctx.closePath();
+    }
+
+    function drawCandy(ctx, candy, x, y, s) {
+      const art = CANDY[candy.c];
+      ctx.save();
+      if (candy.sc !== 1) {
+        ctx.translate(x + s / 2, y + s / 2);
+        ctx.scale(candy.sc, candy.sc);
+        ctx.translate(-x - s / 2, -y - s / 2);
+      }
+      ctx.fillStyle = candy.s === "bomb" ? "#2b2140" : art.fill;
+      candyPath(ctx, candy.s === "bomb" ? "circle" : art.shape, x, y, s);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.25)";
+      ctx.lineWidth = Math.max(1, s * 0.03);
+      ctx.stroke();
+      // shine
+      ctx.fillStyle = "rgba(255,255,255,0.45)";
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.36, y + s * 0.32, s * 0.12, s * 0.08, -0.6, 0, Math.PI * 2);
+      ctx.fill();
+      if (candy.s === "row" || candy.s === "col") {
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.lineWidth = Math.max(2, s * 0.06);
+        for (const o of [-0.16, 0, 0.16]) {
+          ctx.beginPath();
+          if (candy.s === "row") { ctx.moveTo(x + s * 0.18, y + s * (0.5 + o)); ctx.lineTo(x + s * 0.82, y + s * (0.5 + o)); }
+          else { ctx.moveTo(x + s * (0.5 + o), y + s * 0.18); ctx.lineTo(x + s * (0.5 + o), y + s * 0.82); }
+          ctx.stroke();
+        }
+      } else if (candy.s === "bomb") {
+        for (let i = 0; i < 8; i++) {
+          const a = (i * Math.PI) / 4, rr = s * 0.3;
+          ctx.fillStyle = CANDY[i % COLORS].fill;
+          ctx.beginPath();
+          ctx.arc(x + s / 2 + Math.cos(a) * rr, y + s / 2 + Math.sin(a) * rr, s * 0.07, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    function draw() {
+      const s = cell * dpr, W = N * s;
+      sctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++) {
+          sctx.fillStyle = (r + c) % 2 ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.12)";
+          sctx.fillRect(c * s, r * s, s, s);
+        }
+      if (pick) {
+        sctx.strokeStyle = "#fff";
+        sctx.lineWidth = Math.max(2, s * 0.06);
+        sctx.strokeRect(pick[1] * s + 2, pick[0] * s + 2, s - 4, s - 4);
+      }
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++) {
+          const candy = grid[r] && grid[r][c];
+          if (!candy) continue;
+          let x = c * s, y = (r - candy.dy) * s;
+          if (swapAnim) {
+            const p = Math.min(1, swapAnim.t / SWAP_TIME) * (swapAnim.back ? (swapAnim.t > SWAP_TIME / 2 ? 2 - swapAnim.t / SWAP_TIME * 2 : swapAnim.t / SWAP_TIME * 2) : 1);
+            const { r1, c1, r2, c2 } = swapAnim;
+            if (r === r1 && c === c1) { x += (c2 - c1) * s * p; y += (r2 - r1) * s * p; }
+            else if (r === r2 && c === c2) { x += (c1 - c2) * s * p; y += (r1 - r2) * s * p; }
+          }
+          drawCandy(sctx, candy, x, y, s);
+        }
+      drawParticles(sctx);
+    }
+
+    function render() {
+      $("sweetLevel").textContent = `Level ${playing}`;
+      $("sweetMoves").textContent = moves;
+      $("sweetScore").textContent = `${points.toLocaleString()} / ${target.toLocaleString()}`;
+      $("sweetBar").style.width = Math.min(100, (points / target) * 100) + "%";
+    }
+    const msg = t => { $("sweetMsg").textContent = t; };
+
+    // ---- input ----
+    function cellAtPoint(e) {
+      const rect = canvas.getBoundingClientRect();
+      const c = Math.floor(((e.clientX - rect.left) / rect.width) * N);
+      const r = Math.floor(((e.clientY - rect.top) / rect.height) * N);
+      return inside(r, c) ? [r, c] : null;
+    }
+    canvas.addEventListener("pointerdown", e => {
+      if (phase !== "idle") return;
+      const hit = cellAtPoint(e);
+      if (!hit) return;
+      e.preventDefault();
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      drag = { from: hit, x: e.clientX, y: e.clientY };
+      if (pick && (Math.abs(pick[0] - hit[0]) + Math.abs(pick[1] - hit[1]) === 1)) {
+        trySwap(pick[0], pick[1], hit[0], hit[1]);
+        drag = null;
+        return;
+      }
+      pick = hit;
+      snd.sfx.move();
+      draw();
+    });
+    canvas.addEventListener("pointermove", e => {
+      if (!drag || phase !== "idle") return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < cell * 0.45) return;
+      const [r, c] = drag.from;
+      const [r2, c2] = Math.abs(dx) > Math.abs(dy) ? [r, c + (dx > 0 ? 1 : -1)] : [r + (dy > 0 ? 1 : -1), c];
+      drag = null;
+      pick = null;
+      trySwap(r, c, r2, c2);
+    });
+    const endDrag = () => { drag = null; };
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
+
+    function key(e) {
+      if (e.key === "Enter" && phase === "done") $("sweetNext").click();
+    }
+
+    function size() {
+      const avail = Math.min(window.innerWidth - 36, 460);
+      cell = Math.floor(Math.min(avail / N, (window.innerHeight - 250) / N, 58));
+      cell = Math.max(30, cell);
+      const px = cell * N;
+      canvas.style.width = px + "px";
+      canvas.style.height = px + "px";
+      canvas.width = Math.round(px * dpr);
+      canvas.height = Math.round(px * dpr);
+    }
+
+    // ---- the level trail ----
+    function showMap() {
+      phase = "done";
+      $("sweetDone").hidden = true;
+      $("sweetPlay").hidden = true;
+      $("sweetMap").hidden = false;
+      buildMap();
+    }
+
+    function buildMap() {
+      const wrap = $("sweetMap"), count = st.level + 4, W = 300, gap = 86, H = count * gap + 70;
+      const pts = [];
+      for (let i = 0; i < count; i++) {
+        const swing = i % 2 ? 214 : 86;
+        pts.push([i % 4 === 1 || i % 4 === 3 ? swing : W / 2 + (i % 4 === 0 ? -30 : 30), H - 50 - i * gap]);
+      }
+      let d = `M ${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 1; i < pts.length; i++) {
+        const [px, py] = pts[i - 1], [x, y] = pts[i];
+        d += ` Q ${px} ${(py + y) / 2} ${x} ${y}`;
+      }
+      wrap.replaceChildren();
+      wrap.insertAdjacentHTML("afterbegin",
+        `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px" aria-hidden="true">
+           <path d="${d}" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="26" stroke-linecap="round"/>
+           <path d="${d}" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 16"/>
+         </svg>`);
+      pts.forEach(([x, y], i) => {
+        const lvl = i + 1;
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "map-node" + (lvl < st.level ? " done" : lvl === st.level ? " current" : " locked") + (isRush(lvl) ? " rush" : "");
+        b.style.left = (x / W) * 100 + "%";
+        b.style.top = (y / H) * 100 + "%";
+        b.textContent = lvl;
+        b.setAttribute("aria-label", `Level ${lvl}${lvl > st.level ? " (locked)" : ""}`);
+        if (lvl <= st.level) b.addEventListener("click", () => { snd.sfx.pickup(); startLevel(lvl); });
+        else b.disabled = true;
+        wrap.append(b);
+      });
+      const cur = wrap.querySelector(".map-node.current");
+      if (cur) setTimeout(() => cur.scrollIntoView({ block: "center", behavior: "smooth" }), 30);
+    }
+
+    function enter() {
+      $("sweetSave").hidden = true;
+      $("sweetDone").hidden = true;
+      size();
+      showMap();
+      msg("Swap two candies to line up three or more.");
+    }
+
+    return {
+      enter, key, size, draw, tick, showMap,
+      get level() { return st.level; },
+      get best() { return st.best; }
+    };
+  })();
+
   // =====================================================================
   // Home screen and navigation
   // =====================================================================
   let view = "hub";
   function setView(v) {
     view = v;
-    document.body.classList.remove("view-hub", "view-play", "view-ladder", "view-slots");
+    document.body.classList.remove("view-hub", "view-play", "view-ladder", "view-slots", "view-sweet");
     document.body.classList.add("view-" + v);
   }
   function updateHub() {
@@ -3696,12 +4397,14 @@
     $("hubBlast").textContent = bests.blast ? `Best ${bests.blast.toLocaleString()}` : "Drag & clear";
     $("hubLadder").textContent = LL.best ? `On level ${LL.level}` : "Find the words";
     $("hubSlots").textContent = S.best ? `Best win ${S.best.toLocaleString()}` : "Slots & bonus wheel";
+    $("hubSweet").textContent = SW.best ? `On level ${SW.level}` : "Match three";
   }
   function goHub() {
     if (view === "play") { mode = "start"; B.reset(); C.clearCur(); hideOverlays(); }
     S.leave();
+    $("sweetDone").hidden = true;
     snd.stopMusic();
-    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots");
+    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots", "mode-sweet");
     setView("hub");
     updateHub();
     updateStats();
@@ -3718,16 +4421,25 @@
   }
   function openLadder() {
     setView("ladder");
-    document.body.classList.remove("mode-blast", "mode-slots");
+    document.body.classList.remove("mode-blast", "mode-slots", "mode-sweet");
     document.body.classList.add("mode-ladder");
     snd.init();
     snd.setBpm(100);
     snd.startMusic();
     LL.enter();
   }
+  function openSweet() {
+    setView("sweet");
+    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots");
+    document.body.classList.add("mode-sweet");
+    snd.init();
+    snd.setBpm(108);
+    snd.startMusic();
+    SW.enter();
+  }
   function openSlots() {
     setView("slots");
-    document.body.classList.remove("mode-blast", "mode-ladder");
+    document.body.classList.remove("mode-blast", "mode-ladder", "mode-sweet");
     document.body.classList.add("mode-slots");
     snd.init();
     snd.setBpm(112);
@@ -3738,6 +4450,7 @@
     const go = b.dataset.go;
     if (go === "ladder") openLadder();
     else if (go === "slots") openSlots();
+    else if (go === "sweet") openSweet();
     else openGame(go);
   }));
   $("homeBtn").addEventListener("click", goHub);
@@ -3757,6 +4470,7 @@
     }
     if (view === "ladder") { LL.key(e); return; }
     if (view === "slots") { S.key(e); return; }
+    if (view === "sweet") { SW.key(e); return; }
     if (view === "hub") return;
     if (k === "m" || k === "M") { toggleMusic(); return; }
     if (mode === "start" || mode === "over") {
@@ -3845,6 +4559,7 @@
     resize();
     if (view === "ladder") LL.renderWords();
     if (view === "slots") S.size();
+    if (view === "sweet") SW.size();
   });
 
   // Name this phone's board everywhere it shows up
