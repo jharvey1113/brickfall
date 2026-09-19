@@ -21,7 +21,9 @@ Both modes have synthesized sound effects and a synthwave soundtrack. Use the Mu
 | Hold | C |
 | Pause | P |
 
-In Brick Blast, drag with a mouse or finger, or press 1–3 to pick a block, use the arrows to move it, and press Enter to place it. On phones, Classic shows on-screen buttons.
+In Brick Blast, drag with a mouse or finger, or press 1–3 to pick a block, use the arrows to move it, and press Enter to place it.
+
+On phones, Classic uses touch gestures anywhere on the screen: tap to rotate, drag to move, drag down to soft-drop, flick down to hard-drop, and swipe up to hold.
 
 ## Files
 
