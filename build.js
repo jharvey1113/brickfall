@@ -34,6 +34,6 @@ const head = `<!doctype html>
 const bodyStart = src.indexOf('<div class="app">');
 const out = head + src.slice(0, bodyStart) + "</head>\n<body>\n" + src.slice(bodyStart) + "\n</body>\n</html>\n";
 
-fs.mkdirSync(path.join(__dirname, "docs"), { recursive: true });
-fs.writeFileSync(path.join(__dirname, "docs", "index.html"), out);
-console.log("Wrote docs/index.html (" + out.length.toLocaleString() + " bytes)");
+fs.mkdirSync(path.join(__dirname, "docs", "games"), { recursive: true });
+fs.writeFileSync(path.join(__dirname, "docs", "games", "index.html"), out);
+console.log("Wrote docs/games/index.html (" + out.length.toLocaleString() + " bytes)");

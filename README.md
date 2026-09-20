@@ -4,6 +4,8 @@ A family arcade of quick games that runs in any browser, including phones.
 
 **Play:** https://jharvey1113.github.io/brickfall/
 
+That link is a door chooser: the quick games live at `/brickfall/games/`, and the long road-trip game **One More Exit** lives at https://jharvey1113.github.io/one-more-exit/.
+
 ## Games
 
 - **Classic**: rotate falling blocks and fill rows to clear them. Includes hold, a next-piece queue, a ghost piece, and levels that speed up.
@@ -48,6 +50,6 @@ In Letter Ladder, swipe across the letters or tap them one at a time and press â
 ## Files
 
 - `index.html` is the game source.
-- `docs/index.html` is the published copy that GitHub Pages serves.
-- `build.js` regenerates `docs/index.html` from the source. Run `node build.js` after editing `index.html`.
+- `docs/index.html` is the door chooser, and `docs/games/index.html` is the published arcade that GitHub Pages serves.
+- `build.js` regenerates `docs/games/index.html` from the source. Run `node build.js` after editing `index.html`.
 - `tools/words.txt` is the Letter Ladder word list, and `tools/gen-ladder.js` rebuilds the levels from it into `index.html`. Run `node tools/gen-ladder.js` after editing the word list.
