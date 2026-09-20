@@ -10,11 +10,12 @@ That link is a door chooser: the quick games live at `/brickfall/games/`, and th
 
 - **Classic**: rotate falling blocks and fill rows to clear them. Includes hold, a next-piece queue, a ghost piece, and levels that speed up.
 - **Brick Blast**: drag blocks from a tray of three onto an 8×8 grid. Fill rows or columns to blast them, and chain clears for combos.
+- **Double Up**: slide the whole board one way; equal blocks merge and double. Get to 2048, then keep going. Three undos a game.
 - **Sweet Swap**: a match-three candy game with cascades, combos, striped candies and colour bombs, played along an endless level trail.
 - **Spin to Win**: a three-reel slot machine with a pull handle and a Wheel-of-Fortune bonus wheel. Play chips only, with a free daily bonus and free refills; nothing to buy and nothing paid out.
 - **Letter Ladder**: swipe across a wheel of letters to spell the hidden words. There are 500 levels, starting with 4 letters and 2 words and climbing to 7 letters and 10 words. Bonus words earn coins, and coins buy hints.
 
-All three games share a synthwave soundtrack, sound effects, and random cheers for good moves. Use the music and sound buttons (or **M**) to turn them on or off. On iPhone, the silent switch mutes the game.
+Every game has its own soundtrack, sound effects, and random cheers for good moves. Use the music and sound buttons (or **M**) to turn them on or off. On iPhone, the silent switch mutes the game.
 
 ## Family leaderboard and crowns
 

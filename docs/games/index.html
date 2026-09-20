@@ -920,6 +920,46 @@
   .mode-sweet .ghost-btn { background: rgba(255, 255, 255, 0.22); border-color: transparent; color: #fff; }
   .tile-sweet { background: linear-gradient(160deg, #e0559f, #6a2c7a); }
 
+  /* Double Up */
+  body.mode-dbl {
+    --ground: #123a52;
+    --muted: #cfe8f5;
+    background: linear-gradient(180deg, #2fd0c5 0%, #1f7fa8 45%, #123a52 100%) fixed;
+  }
+  .dbl { display: none; }
+  .view-dbl .dbl { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 460px; }
+  .view-dbl .game, .view-dbl .blast-score, .view-dbl .blast-hint, .view-dbl .gesture-hint,
+  .view-dbl .ladder, .view-dbl .slots, .view-dbl .sweet, .view-hub .dbl, .view-play .dbl,
+  .view-ladder .dbl, .view-slots .dbl, .view-sweet .dbl { display: none !important; }
+  .view-dbl #pauseBtn { display: none; }
+  .mode-dbl header { justify-content: flex-end; }
+  .mode-dbl .wordmark { display: none; }
+  .mode-dbl .ghost-btn { background: rgba(255, 255, 255, 0.22); border-color: transparent; color: #fff; }
+  .tile-dbl { background: linear-gradient(160deg, #2fd0c5, #145f80); }
+
+  .dbl-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; width: 100%; }
+  .dbl-score { display: grid; gap: 1px; }
+  .dbl-score b { font-family: "Fredoka", var(--body); font-size: 34px; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+  .dbl-score span { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .dbl-side { display: flex; align-items: center; gap: 8px; }
+  .dbl-best { text-align: right; display: grid; gap: 1px; }
+  .dbl-best b { font-family: "Fredoka", var(--body); font-size: 18px; color: #ffd23f; font-variant-numeric: tabular-nums; }
+  .dbl-best span { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .dbl-btns { display: flex; gap: 8px; width: 100%; }
+  .dbl-btns .ghost-btn { flex: 1; }
+  #dblBoard { touch-action: none; border-radius: 14px; background: rgba(4, 26, 40, 0.42); }
+  .dbl-msg { margin: 0; min-height: 20px; color: #e7f6ff; font-size: 14px; text-align: center; }
+  .mode-dbl .primary {
+    background: #ffd23f;
+    color: #123a52;
+    box-shadow: 0 3px 0 #b38a12;
+    font-family: "Fredoka", var(--body);
+    border-radius: 999px;
+  }
+  .mode-dbl .modal-card { background: #14465f; border-color: rgba(255, 255, 255, 0.2); }
+  .seg-6 { grid-template-columns: repeat(6, 1fr); }
+  .seg-6 button { font-size: 10px; padding: 6px 1px; letter-spacing: 0; }
+
   .sweet-top {
     display: flex;
     align-items: center;
@@ -1116,6 +1156,22 @@
         <span class="tile-sub" id="hubSweet">Match three</span>
         <span class="tile-king" id="kingSweet"></span>
       </button>
+      <button class="hub-tile tile-dbl" type="button" data-go="dbl">
+        <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
+          <rect x="4" y="3" width="17" height="17" rx="3" fill="#5ec8f0"/>
+          <rect x="23" y="3" width="17" height="17" rx="3" fill="#3ddc84"/>
+          <rect x="42" y="3" width="14" height="17" rx="3" fill="rgba(255,255,255,0.18)"/>
+          <rect x="4" y="23" width="17" height="17" rx="3" fill="rgba(255,255,255,0.18)"/>
+          <rect x="23" y="23" width="17" height="17" rx="3" fill="#ffd23f"/>
+          <rect x="42" y="23" width="14" height="17" rx="3" fill="#ef5b52"/>
+          <text x="12.5" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#0b2b3d" font-family="Fredoka, sans-serif">2</text>
+          <text x="31.5" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#0b2b3d" font-family="Fredoka, sans-serif">4</text>
+          <text x="31.5" y="36" text-anchor="middle" font-size="10" font-weight="700" fill="#5a4200" font-family="Fredoka, sans-serif">8</text>
+        </svg>
+        <span class="tile-name">Double Up</span>
+        <span class="tile-sub" id="hubDouble">Slide &amp; merge</span>
+        <span class="tile-king" id="kingDouble"></span>
+      </button>
       <button class="hub-tile tile-ladder" type="button" data-go="ladder">
         <svg class="tile-art" viewBox="0 0 60 44" aria-hidden="true">
           <circle cx="30" cy="22" r="20" fill="rgba(255,255,255,0.18)"/>
@@ -1190,6 +1246,30 @@
         <label for="sweetName">Your name for the <span class="board-name">family board</span></label>
         <div class="save-row">
           <input id="sweetName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
+          <button class="primary" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="dbl" id="dbl" aria-label="Double Up">
+    <div class="dbl-top">
+      <div class="dbl-score"><b id="dblScore">0</b><span>Score</span></div>
+      <div class="dbl-side">
+        <div class="dbl-best"><b id="dblBest">0</b><span>Best</span></div>
+      </div>
+    </div>
+    <canvas id="dblBoard" aria-label="Number board"></canvas>
+    <div class="dbl-btns">
+      <button class="ghost-btn" id="dblUndo" type="button">Undo (3)</button>
+      <button class="ghost-btn" id="dblNew" type="button">New game</button>
+    </div>
+    <p class="dbl-msg" id="dblMsg"></p>
+    <div id="dblSave" hidden>
+      <form class="save-form" id="dblSaveForm">
+        <label for="dblName">Your name for the <span class="board-name">family board</span></label>
+        <div class="save-row">
+          <input id="dblName" maxlength="16" autocomplete="nickname" placeholder="Name" enterkeyhint="done">
           <button class="primary" type="submit">Save</button>
         </div>
       </form>
@@ -1327,9 +1407,10 @@
       <h2 id="boardTitle">Family leaderboard</h2>
       <button class="link-btn" id="boardClose" type="button">Close</button>
     </div>
-    <div class="seg seg-5" id="boardModeSeg">
+    <div class="seg seg-6" id="boardModeSeg">
       <button type="button" data-mode="classic" aria-pressed="false">Classic</button>
       <button type="button" data-mode="blast" aria-pressed="true">Blast</button>
+      <button type="button" data-mode="double" aria-pressed="false">Double</button>
       <button type="button" data-mode="ladder" aria-pressed="false">Ladder</button>
       <button type="button" data-mode="slots" aria-pressed="false">Spin</button>
       <button type="button" data-mode="sweet" aria-pressed="false">Sweet</button>
@@ -1349,6 +1430,15 @@
     <p class="ld-done-note" id="sweetDoneNote"></p>
     <button class="primary big-play" id="sweetNext" type="button">Next level</button>
     <button class="link-btn" id="sweetDoneMap" type="button">Back to the map</button>
+  </div>
+</div>
+
+<div class="modal" id="dblDone" role="dialog" aria-modal="true" aria-labelledby="dblDoneTitle" hidden>
+  <div class="modal-card ld-done">
+    <h2 id="dblDoneTitle">No moves left</h2>
+    <p class="ld-done-note" id="dblDoneNote"></p>
+    <button class="primary big-play" id="dblAgain" type="button">Play again</button>
+    <button class="link-btn" id="dblDoneHome" type="button">Back to the games</button>
   </div>
 </div>
 
@@ -1661,6 +1751,13 @@
         prog: [{ root: 36, chord: [55, 60, 64, 67] }, { root: 43, chord: [55, 59, 62, 67] },
                { root: 45, chord: [52, 57, 60, 64] }, { root: 41, chord: [53, 57, 60, 65] }],
         drums: "pop", bass: "bouncy", pad: 0.014, ep: 0, arp: "bell", lead: true
+      },
+      // Double Up: cool, patient electro in A minor — thinking music
+      arcade: {
+        bpm: 96,
+        prog: [{ root: 45, chord: [52, 57, 60, 64] }, { root: 40, chord: [52, 55, 59, 64] },
+               { root: 43, chord: [50, 55, 59, 62] }, { root: 41, chord: [53, 57, 60, 65] }],
+        drums: "four", bass: "simple", pad: 0.022, ep: 0.03, arp: "tri", lead: false
       }
     };
     let style = STYLES.synthwave;
@@ -2848,11 +2945,13 @@
       updateFx(dt);
       if (view === "slots") S.tick(dt);
       else if (view === "sweet") SW.tick(dt);
+      else if (view === "dbl") D.tick(dt);
       else if (game === "classic") C.update(dt);
       else B.update(dt);
     }
     if (view === "slots") S.draw();
     else if (view === "sweet") SW.draw();
+    else if (view === "dbl") D.draw();
     else if (game === "classic") C.draw();
     else B.draw();
     const lock = mode === "play" || mode === "clear" || mode === "ending";
@@ -2904,8 +3003,8 @@
 
   // ---- Stealable crowns: the all-time #1 in each game holds the crown ----
   const CROWN_KEY = GROUP === "family" ? "brickfall-crowns" : `brickfall-crowns:${GROUP}`;
-  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", ladder: "Letter Ladder", slots: "Spin to Win", sweet: "Sweet Swap" };
-  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", ladder: "kingLadder", slots: "kingSlots", sweet: "kingSweet" };
+  const MODE_NAMES = { classic: "Classic", blast: "Brick Blast", double: "Double Up", ladder: "Letter Ladder", slots: "Spin to Win", sweet: "Sweet Swap" };
+  const KING_IDS = { classic: "kingClassic", blast: "kingBlast", double: "kingDouble", ladder: "kingLadder", slots: "kingSlots", sweet: "kingSweet" };
   const CROWN_SVG = '<svg viewBox="0 0 34 27" aria-hidden="true"><path d="M3 8 L10 14 L17 3 L24 14 L31 8 L28 21 H6 Z" fill="#ffd23f" stroke="#e0a800" stroke-width="1.5" stroke-linejoin="round"/><rect x="6" y="22" width="22" height="4" rx="2" fill="#e0a800"/></svg>';
   const kings = {};
   const fmtScore = (mode, pts) => mode === "ladder" || mode === "sweet" ? `Level ${pts}` : pts.toLocaleString();
@@ -4579,9 +4678,378 @@
   // Home screen and navigation
   // =====================================================================
   let view = "hub";
+
+  // =====================================================================
+  // Double Up — slide the board, equal blocks merge and double.
+  // Four by four, no timer, one wrong move from the end of it.
+  // =====================================================================
+  const D = (() => {
+    const N = 4, SLIDE = 0.09, POP = 0.14, UNDOS = 3;
+    // Each value gets its own block colour, climbing the arcade palette, so
+    // a big number looks like a big number before you read it.
+    const TINT = {
+      2: "#7fd9f5", 4: "#5ec8f0", 8: "#3ddc84", 16: "#a8d94a", 32: "#ffd23f",
+      64: "#ff9f3f", 128: "#ff7043", 256: "#ef5b52", 512: "#ff5a9e",
+      1024: "#b15cff", 2048: "#7c6cff", 4096: "#2ec4f1", 8192: "#3ddc84"
+    };
+    const tint = v => TINT[v] || "#ffd23f";
+    const DBL_CHEERS = [
+      ["Double up!", "Nice!", "Noice!", "Boom!", "Stacked!"],
+      ["Big one!", "Bazinga!", "Oh Snap!", "Way to go!", "Doubled!"],
+      ["Oh Dang!", "Unbelievable!", "Legendary!", "Bazinga!", "Crushed it!"]
+    ];
+    const dblCheer = tier => {
+      const list = DBL_CHEERS[Math.max(0, Math.min(2, tier - 1))];
+      cheer(tier, list[Math.floor(Math.random() * list.length)]);
+    };
+
+    const canvas = $("dblBoard"), dctx = canvas.getContext("2d");
+    let st = load();
+    let grid = [], score = 0, cell = 76, msgT = 0;
+    let phase = "idle", anim = 0, moving = [], pops = [], undos = UNDOS, history = [];
+    let won = false, posted = false;
+
+    function fresh() { return { best: 0, bestTile: 0 }; }
+    function load() {
+      try {
+        const v = JSON.parse(store.get("brickfall-double"));
+        if (v && typeof v.best === "number") return Object.assign(fresh(), v);
+      } catch (e) {}
+      return fresh();
+    }
+    function save() { store.set("brickfall-double", JSON.stringify(st)); }
+
+    const empties = () => {
+      const out = [];
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (!grid[r][c]) out.push([r, c]);
+      return out;
+    };
+    function spawn() {
+      const free = empties();
+      if (!free.length) return null;
+      const [r, c] = free[Math.floor(Math.random() * free.length)];
+      grid[r][c] = Math.random() < 0.9 ? 2 : 4;          // a four now and then
+      pops.push({ r, c, t: 0, kind: "new" });
+      return [r, c];
+    }
+    function reset() {
+      grid = Array.from({ length: N }, () => Array(N).fill(0));
+      score = 0; won = false; posted = false; undos = UNDOS;
+      history = []; moving = []; pops = []; phase = "idle"; anim = 0;
+      spawn(); spawn();
+      $("dblDone").hidden = true;
+      $("dblSave").hidden = true;
+      msg("Swipe to slide everything one way. Equal blocks double.");
+      hud();
+    }
+
+    // ---- the move itself ----
+    // Every direction is the same job on a line, so the board is read into
+    // lines pointing the way you swiped and written back the same way.
+    const lineOf = (dir, i) => {
+      const cells = [];
+      for (let k = 0; k < N; k++) {
+        if (dir === "left") cells.push([i, k]);
+        else if (dir === "right") cells.push([i, N - 1 - k]);
+        else if (dir === "up") cells.push([k, i]);
+        else cells.push([N - 1 - k, i]);
+      }
+      return cells;
+    };
+
+    function move(dir) {
+      // A swipe during the last slide doesn't get dropped: the board catches
+      // up first, which is what fast thumbs expect.
+      if (phase === "slide") settle();
+      if (phase !== "idle") return false;
+      const before = { grid: grid.map(row => row.slice()), score, undos };
+      const next = Array.from({ length: N }, () => Array(N).fill(0));
+      const slides = [], merges = [];
+      let gained = 0, biggest = 0, changed = false;
+
+      for (let i = 0; i < N; i++) {
+        const cells = lineOf(dir, i);
+        const vals = cells.map(([r, c]) => ({ v: grid[r][c], r, c })).filter(t => t.v);
+        let write = 0;
+        for (let k = 0; k < vals.length; k++) {
+          const [tr, tc] = cells[write];
+          if (k + 1 < vals.length && vals[k].v === vals[k + 1].v) {
+            const val = vals[k].v * 2;
+            next[tr][tc] = val;
+            gained += val;
+            biggest = Math.max(biggest, val);
+            slides.push({ v: vals[k].v, from: [vals[k].r, vals[k].c], to: [tr, tc] });
+            slides.push({ v: vals[k + 1].v, from: [vals[k + 1].r, vals[k + 1].c], to: [tr, tc] });
+            merges.push({ r: tr, c: tc, v: val });
+            k++;
+          } else {
+            next[tr][tc] = vals[k].v;
+            slides.push({ v: vals[k].v, from: [vals[k].r, vals[k].c], to: [tr, tc] });
+          }
+          write++;
+        }
+        for (let k = 0; k < N; k++) {
+          const [r, c] = cells[k];
+          if (grid[r][c] !== next[r][c]) changed = true;
+        }
+      }
+      if (!changed) { snd.sfx.invalid(); shake(4); return false; }
+
+      history.push(before);
+      if (history.length > 8) history.shift();
+      grid = next;
+      score += gained;
+      st.best = Math.max(st.best, score);
+      st.bestTile = Math.max(st.bestTile, biggest);
+      save();
+
+      moving = slides.filter(sl => sl.from[0] !== sl.to[0] || sl.from[1] !== sl.to[1] || merges.length);
+      phase = "slide"; anim = 0;
+      pendingMerges = merges;
+      pendingBig = biggest;
+      snd.sfx.move();
+      hud();
+      return true;
+    }
+    let pendingMerges = [], pendingBig = 0;
+
+    function settle() {
+      for (const m of pendingMerges) pops.push({ r: m.r, c: m.c, t: 0, kind: "merge" });
+      if (pendingMerges.length) {
+        snd.sfx.clear();
+        shake(Math.min(10, 3 + pendingMerges.length * 2));
+        if (pendingBig >= 1024) dblCheer(3);
+        else if (pendingBig >= 256) dblCheer(2);
+        else if (pendingBig >= 64) dblCheer(1);
+      }
+      if (pendingBig >= 2048 && !won) {
+        won = true;
+        snd.sfx.big();
+        finish(true);
+        return;
+      }
+      pendingMerges = []; pendingBig = 0;
+      moving = [];
+      phase = "idle";
+      spawn();
+      hud();
+      if (!canMove()) finish(false);
+    }
+
+    function canMove() {
+      if (empties().length) return true;
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++) {
+          if (c + 1 < N && grid[r][c] === grid[r][c + 1]) return true;
+          if (r + 1 < N && grid[r][c] === grid[r + 1][c]) return true;
+        }
+      return false;
+    }
+
+    function finish(win) {
+      phase = win ? "idle" : "done";
+      if (!win) snd.sfx.gameOver();
+      $("dblDoneTitle").textContent = win ? "2048!" : "No moves left";
+      $("dblDoneNote").textContent = win
+        ? `You built a 2048 block and scored ${score.toLocaleString()}. Keep going for more.`
+        : `${score.toLocaleString()} points, biggest block ${biggestOnBoard().toLocaleString()}.`;
+      $("dblAgain").textContent = win ? "Keep going" : "Play again";
+      $("dblDone").hidden = false;
+      $("dblAgain").focus();
+      post();
+    }
+    function biggestOnBoard() {
+      let m = 0;
+      for (const row of grid) for (const v of row) m = Math.max(m, v);
+      return m;
+    }
+
+    async function post() {
+      if (!lb.on || posted) return;
+      const name = playerName();
+      if (!name) { $("dblSave").hidden = false; return; }
+      posted = true;
+      try {
+        const crown = await submitWithCrown("double", name, st.best);
+        if (crown) { $("dblDoneNote").textContent = crownMessage(crown, "double"); cheer(3); }
+      } catch (e) {
+        posted = false;
+        $("dblDoneNote").textContent += " (Couldn't reach the family board.)";
+      }
+    }
+    $("dblSaveForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = $("dblName").value.trim().slice(0, 16);
+      if (!name) { $("dblName").focus(); return; }
+      store.set("brickfall-name", name);
+      $("dblSave").hidden = true;
+      post();
+    });
+    $("dblAgain").addEventListener("click", () => {
+      $("dblDone").hidden = true;
+      if ($("dblAgain").textContent === "Play again") reset();
+      else { phase = "idle"; pendingMerges = []; pendingBig = 0; moving = []; spawn(); hud(); }
+    });
+    $("dblDoneHome").addEventListener("click", () => { $("dblDone").hidden = true; goHub(); });
+    $("dblNew").addEventListener("click", () => { snd.sfx.pickup(); reset(); });
+    $("dblUndo").addEventListener("click", undo);
+
+    function undo() {
+      if (phase === "slide" || !history.length || undos <= 0) { snd.sfx.invalid(); return; }
+      const back = history.pop();
+      grid = back.grid.map(row => row.slice());
+      score = back.score;
+      undos--;
+      phase = "idle"; moving = []; pops = [];
+      $("dblDone").hidden = true;
+      snd.sfx.hold();
+      msg(undos ? "Taken back." : "That was the last one.");
+      hud();
+    }
+
+    // ---- presentation ----
+    function hud() {
+      $("dblScore").textContent = score.toLocaleString();
+      $("dblBest").textContent = st.best.toLocaleString();
+      $("dblUndo").textContent = `Undo (${undos})`;
+      $("dblUndo").disabled = !history.length || undos <= 0;
+    }
+    function msg(t) { $("dblMsg").textContent = t; msgT = 4; }
+
+    function tick(dt) {
+      if (msgT > 0 && (msgT -= dt) <= 0) $("dblMsg").textContent = "";
+      if (phase === "slide") {
+        anim += dt / SLIDE;
+        if (anim >= 1) { anim = 0; settle(); }
+      }
+      for (const p of pops) p.t += dt;
+      pops = pops.filter(p => p.t < POP * 2);
+    }
+
+    function draw() {
+      const s = cell * dpr, W = N * s;
+      dctx.clearRect(0, 0, canvas.width, canvas.height);
+      const pad = s * 0.055, rad = s * 0.16;
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++) {
+          dctx.fillStyle = "rgba(255,255,255,0.07)";
+          const x0 = c * s + pad, y0 = r * s + pad, w0 = s - pad * 2;
+          dctx.beginPath();
+          dctx.moveTo(x0 + rad, y0);
+          dctx.arcTo(x0 + w0, y0, x0 + w0, y0 + w0, rad);
+          dctx.arcTo(x0 + w0, y0 + w0, x0, y0 + w0, rad);
+          dctx.arcTo(x0, y0 + w0, x0, y0, rad);
+          dctx.arcTo(x0, y0, x0 + w0, y0, rad);
+          dctx.closePath();
+          dctx.fill();
+        }
+
+      const ease = t => 1 - Math.pow(1 - t, 3);
+      if (phase === "slide") {
+        const t = ease(Math.min(1, anim));
+        for (const m of moving) {
+          const r = m.from[0] + (m.to[0] - m.from[0]) * t;
+          const c = m.from[1] + (m.to[1] - m.from[1]) * t;
+          block(c * s, r * s, s, m.v, 1);
+        }
+      } else {
+        for (let r = 0; r < N; r++)
+          for (let c = 0; c < N; c++) {
+            const v = grid[r][c];
+            if (!v) continue;
+            const pop = pops.find(p => p.r === r && p.c === c);
+            let scale = 1;
+            if (pop) {
+              const k = Math.min(1, pop.t / POP);
+              scale = pop.kind === "new" ? 0.4 + 0.6 * ease(k)
+                    : 1 + Math.sin(Math.min(1, pop.t / (POP * 1.6)) * Math.PI) * 0.16;
+            }
+            block(c * s, r * s, s, v, scale);
+          }
+      }
+    }
+
+    // One block: the arcade's beveled face, with its number on it.
+    function block(x, y, s, v, scale) {
+      const inset = s * 0.045;
+      const size = (s - inset * 2) * (scale || 1);
+      const cx = x + s / 2, cy = y + s / 2;
+      drawBlock(dctx, cx - size / 2, cy - size / 2, size, tint(v));
+      const digits = String(v).length;
+      const fs = size * (digits <= 2 ? 0.44 : digits === 3 ? 0.35 : digits === 4 ? 0.27 : 0.22);
+      dctx.font = `700 ${fs}px "Fredoka", ${getComputedStyle(document.body).fontFamily}`;
+      dctx.textAlign = "center";
+      dctx.textBaseline = "middle";
+      dctx.fillStyle = "rgba(10,28,40,0.30)";
+      dctx.fillText(String(v), cx, cy + fs * 0.1);
+      dctx.fillStyle = v <= 8 ? "#123a52" : "#ffffff";
+      dctx.fillText(String(v), cx, cy + fs * 0.06);
+    }
+
+    // ---- input: swipe anywhere on the board, or the arrow keys ----
+    let sw = null;
+    canvas.addEventListener("pointerdown", e => {
+      if (phase === "done" || !$("dblDone").hidden) return;
+      e.preventDefault();
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      sw = { id: e.pointerId, x: e.clientX, y: e.clientY, done: false };
+    });
+    canvas.addEventListener("pointermove", e => {
+      if (!sw || e.pointerId !== sw.id || sw.done) return;
+      const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+      if (Math.hypot(dx, dy) < Math.max(18, cell * 0.35)) return;
+      sw.done = true;
+      move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up"));
+    });
+    const endSwipe = () => { sw = null; };
+    canvas.addEventListener("pointerup", endSwipe);
+    canvas.addEventListener("pointercancel", endSwipe);
+
+    const KEYS = {
+      ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down",
+      a: "left", d: "right", w: "up", s: "down", A: "left", D: "right", W: "up", S: "down"
+    };
+    function key(e) {
+      if (!$("dblDone").hidden) {
+        if (e.key === "Enter" && document.activeElement?.tagName !== "BUTTON") $("dblAgain").click();
+        return;
+      }
+      if (e.key === "z" || e.key === "Z") { undo(); return; }
+      const dir = KEYS[e.key];
+      if (!dir) return;
+      e.preventDefault();
+      move(dir);
+    }
+
+    function size() {
+      const avail = Math.min(window.innerWidth - 36, 430);
+      cell = Math.max(48, Math.floor(Math.min(avail / N, (window.innerHeight - 290) / N, 104)));
+      const px = cell * N;
+      canvas.style.width = px + "px";
+      canvas.style.height = px + "px";
+      canvas.width = Math.round(px * dpr);
+      canvas.height = Math.round(px * dpr);
+    }
+
+    function enter() {
+      size();
+      if (!grid.length || phase === "done") reset();
+      else { hud(); msg("Swipe to slide everything one way. Equal blocks double."); }
+    }
+
+    return {
+      enter, key, size, draw, tick, reset,
+      get debug() { return { phase, anim, score, undos, history: history.length, grid: grid.map(r => r.join(",")).join(" | ") }; },
+      get best() { return st.best; },
+      get bestTile() { return st.bestTile; }
+    };
+  })();
+
+  if (location.search.includes("debug")) window.__D = D;
+
   function setView(v) {
     view = v;
-    document.body.classList.remove("view-hub", "view-play", "view-ladder", "view-slots", "view-sweet");
+    document.body.classList.remove("view-hub", "view-play", "view-ladder", "view-slots", "view-sweet", "view-dbl");
     document.body.classList.add("view-" + v);
   }
   function updateHub() {
@@ -4590,13 +5058,15 @@
     $("hubLadder").textContent = LL.best ? `On level ${LL.level}` : "Find the words";
     $("hubSlots").textContent = S.best ? `Best win ${S.best.toLocaleString()}` : "Slots & bonus wheel";
     $("hubSweet").textContent = SW.best ? `On level ${SW.level}` : "Match three";
+    $("hubDouble").textContent = D.best ? `Best ${D.best.toLocaleString()}` : "Slide & merge";
   }
   function goHub() {
     if (view === "play") { mode = "start"; B.reset(); C.clearCur(); hideOverlays(); }
     S.leave();
     $("sweetDone").hidden = true;
+    $("dblDone").hidden = true;
     snd.stopMusic();
-    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots", "mode-sweet");
+    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots", "mode-sweet", "mode-dbl");
     setView("hub");
     updateHub();
     updateStats();
@@ -4629,6 +5099,15 @@
     snd.startMusic();
     SW.enter();
   }
+  function openDouble() {
+    setView("dbl");
+    document.body.classList.remove("mode-blast", "mode-ladder", "mode-slots", "mode-sweet");
+    document.body.classList.add("mode-dbl");
+    snd.init();
+    snd.setStyle("arcade");
+    snd.startMusic();
+    D.enter();
+  }
   function openSlots() {
     setView("slots");
     document.body.classList.remove("mode-blast", "mode-ladder", "mode-sweet");
@@ -4643,6 +5122,7 @@
     if (go === "ladder") openLadder();
     else if (go === "slots") openSlots();
     else if (go === "sweet") openSweet();
+    else if (go === "dbl") openDouble();
     else openGame(go);
   }));
   $("homeBtn").addEventListener("click", goHub);
@@ -4663,6 +5143,7 @@
     if (view === "ladder") { LL.key(e); return; }
     if (view === "slots") { S.key(e); return; }
     if (view === "sweet") { SW.key(e); return; }
+    if (view === "dbl") { D.key(e); return; }
     if (view === "hub") return;
     if (k === "m" || k === "M") { toggleMusic(); return; }
     if (mode === "start" || mode === "over") {
@@ -4752,6 +5233,7 @@
     if (view === "ladder") LL.renderWords();
     if (view === "slots") S.size();
     if (view === "sweet") SW.size();
+    if (view === "dbl") D.size();
   });
 
   // Name this phone's board everywhere it shows up
