@@ -5,6 +5,7 @@ const fs = require("fs"), vm = require("vm"), path = require("path");
 const dir = process.argv[2] || ".";
 const html = fs.readFileSync(path.join(dir, "index.html"), "utf8");
 const script = html.match(/<script>([\s\S]*?)<\/script>/g).pop().replace(/^<script>|<\/script>$/g, "");
+const LIVE_BOARD = process.argv.includes("--board");   // post to the real board (group __test)
 const realIds = new Set([...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]));
 // elements that start hidden in the markup must start hidden here too, or the
 // page's "is a modal open?" guards swallow every key
@@ -68,8 +69,11 @@ const ctx = {
   localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => (store[k] = String(v)), removeItem: k => delete store[k] },
   Math, Date, JSON, Set, Map, Promise, Array, Object, String, Number, Boolean, isNaN, Float32Array,
   parseInt, parseFloat, URLSearchParams, encodeURIComponent, Proxy, Reflect, Error,
-  fetch: async () => ({ ok: true, status: 200, json: async () => [], text: async () => "[]" }),
-  location: { hostname: "localhost", search: "?solo&debug", href: "http://localhost/" },
+  fetch: LIVE_BOARD ? ((...a) => fetch(...a))
+    : async () => ({ ok: true, status: 200, json: async () => [], text: async () => "[]" }),
+  location: LIVE_BOARD
+    ? { hostname: "jharvey1113.github.io", search: "?debug&group=__test", href: "https://jharvey1113.github.io/" }
+    : { hostname: "localhost", search: "?solo&debug", href: "http://localhost/" },
   getComputedStyle: () => ({ fontFamily: "sans-serif" }),
   devicePixelRatio: 1, innerWidth: 390, innerHeight: 844,
   addEventListener() {}, removeEventListener() {},
@@ -131,6 +135,7 @@ const press = key => (docHandlers.keydown || []).forEach(fn =>
   fn({ key, target: {}, repeat: false, preventDefault() {}, stopPropagation() {} }));
 
 // ---- open the game -------------------------------------------------------
+if (LIVE_BOARD) store["brickfall-name"] = JSON.stringify("BotProbe");
 const D = ctx.window.__D;
 if (!D) { console.log("no debug handle — is the ?debug export still in the page?"); process.exit(1); }
 goButtons.find(b => b.dataset.go === "dbl").click();     // open Double Up
@@ -180,6 +185,18 @@ for (const r of results) {
   console.log("   " + r.grid);
   if (r.note) console.log("   " + r.note);
 }
+if (LIVE_BOARD) {
+  // give the submit time to land, then read what the page put on screen
+  const until = Date.now() + 8000;
+  const wait = async () => { while (Date.now() < until) { step(200); await new Promise(r => setTimeout(r, 120)); } };
+  wait().then(() => {
+    console.log("board note:", byId("dblDoneNote").textContent);
+    console.log("board save form shown:", !byId("dblSave").hidden);
+    finish();
+  });
+} else finish();
+function finish() {
 const last = ctx.window.__D;
 if (last) console.log("lifetime best:", last.best, "best tile:", last.bestTile);
 if (missing.size) console.log("MISSING ELEMENT IDS:", [...missing].join(", "));
+}
