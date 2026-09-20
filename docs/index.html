@@ -56,6 +56,26 @@
   }
   .road .go { background: #eef3ee; color: #143a26; }
   footer { text-align: center; color: #6f7893; font-size: 13px; padding: 0 16px 22px; }
+
+  /* phones: fit both doors on one screen without pinching */
+  @media (max-width: 699px) {
+    .page { padding: 14px 14px 18px; gap: 12px; }
+    h1 { font-size: 26px; }
+    .sub { font-size: 13px; margin-top: 4px; }
+    .doors { gap: 12px; }
+    .door { padding: 14px 16px 16px; gap: 7px; border-radius: 14px; }
+    .door-art { height: 64px; }
+    .door h2 { font-size: 22px; }
+    .door .tag { font-size: 11px; letter-spacing: 0.14em; }
+    .door p { font-size: 14px; line-height: 1.45; }
+    .door ul { display: none; }
+    .go { padding: 9px 16px; font-size: 14px; margin-top: 4px; }
+    footer { font-size: 12px; padding-bottom: 14px; }
+  }
+  @media (max-width: 699px) and (min-height: 760px) {
+    .door ul { display: block; font-size: 13px; }
+    .door-art { height: 78px; }
+  }
 </style>
 </head>
 <body>
