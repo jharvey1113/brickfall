@@ -24,6 +24,7 @@ const head = `<!doctype html>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Brickfall">
 <link rel="icon" href="data:image/svg+xml,${icon}">
+<script src="../sync.js" data-reload="1" defer></script>
 <style>
   :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
   body { font-size: 14px; }

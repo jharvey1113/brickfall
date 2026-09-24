@@ -33,6 +33,12 @@ These are copies of the games in the [games](https://github.com/jharvey1113/game
 
 Players enter a name once, and scores save automatically to a shared board (This week / All time). The all-time #1 in each game holds that game's crown, shown on the home screen. When someone takes it, the home screen announces who stole the crown from whom.
 
+## Progress on any phone
+
+Progress follows the player's name, not the phone. `docs/sync.js` runs on every page and keeps a copy of each player's saves (levels, coins, chips, best scores) in the Supabase table `arcade_saves`, keyed by board group and name. Opening the link in Safari, a home-screen shortcut, or a new phone and typing the same name brings the progress back. When two copies disagree, the one with more progress wins, so a fresh start never overwrites real progress. The door and arcade pages show a small "saving as" bar where players type or change their name.
+
+To set up the table, run `supabase/arcade_saves.sql` once in the Supabase SQL editor. Until then everything keeps saving on the phone as before.
+
 ## Separate boards (groups)
 
 Each board is separate, with its own top-10 lists and crowns:
