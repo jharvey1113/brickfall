@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#10162a">
-<meta name="description" content="Two ways in: quick games, or one long road.">
+<meta name="description" content="Three ways in: quick games, arcade classics, or one long road.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Pick a Door</title>
@@ -29,7 +29,8 @@
   h1 { font-family: "Fredoka", sans-serif; font-weight: 700; font-size: clamp(26px, 7vw, 40px); margin: 0; letter-spacing: 0.01em; }
   .sub { margin: 6px 0 0; color: #9aa4bb; font-size: 15px; }
   .doors { display: grid; gap: 16px; grid-template-columns: 1fr; }
-  @media (min-width: 700px) { .doors { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 700px) { .doors { grid-template-columns: 1fr 1fr; } .door.classics { grid-column: 1 / -1; } }
+  @media (min-width: 900px) { .page { max-width: 1120px; } .doors { grid-template-columns: repeat(3, 1fr); } .door.classics { grid-column: auto; } }
 
   .door {
     display: flex; flex-direction: column; gap: 10px;
@@ -44,6 +45,7 @@
   .door:focus-visible { outline: 3px solid #ffd23f; outline-offset: 3px; }
   .arcade { background: linear-gradient(160deg, #3d5bd0 0%, #1d2a66 60%, #151b33 100%); }
   .road { background: linear-gradient(160deg, #1d6b3c 0%, #143a26 55%, #10161a 100%); }
+  .classics { background: linear-gradient(160deg, #c2412a 0%, #5e1c2c 58%, #151b33 100%); }
   .door-art { width: 100%; height: 108px; }
   .door h2 { font-family: "Fredoka", sans-serif; font-weight: 700; font-size: 27px; margin: 0; }
   .door .tag { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin: 0; }
@@ -55,6 +57,7 @@
     letter-spacing: 0.05em; padding: 11px 20px; border-radius: 999px; font-size: 15px;
   }
   .road .go { background: #eef3ee; color: #143a26; }
+  .classics .go { background: #ffe3a3; color: #4a1208; }
   footer { text-align: center; color: #6f7893; font-size: 13px; padding: 0 16px 22px; }
 
   /* phones: fit both doors on one screen without pinching */
@@ -64,7 +67,7 @@
     .sub { font-size: 13px; margin-top: 4px; }
     .doors { gap: 12px; }
     .door { padding: 14px 16px 16px; gap: 7px; border-radius: 14px; }
-    .door-art { height: 64px; }
+    .door-art { height: 50px; }
     .door h2 { font-size: 22px; }
     .door .tag { font-size: 11px; letter-spacing: 0.14em; }
     .door p { font-size: 14px; line-height: 1.45; }
@@ -72,9 +75,8 @@
     .go { padding: 9px 16px; font-size: 14px; margin-top: 4px; }
     footer { font-size: 12px; padding-bottom: 14px; }
   }
-  @media (max-width: 699px) and (min-height: 760px) {
-    .door ul { display: block; font-size: 13px; }
-    .door-art { height: 78px; }
+  @media (max-width: 699px) and (min-height: 860px) {
+    .door-art { height: 64px; }
   }
 </style>
 </head>
@@ -82,7 +84,7 @@
   <div class="page">
     <header>
       <h1>Pick a door</h1>
-      <p class="sub">Two very different kinds of evening.</p>
+      <p class="sub">Three very different kinds of evening.</p>
     </header>
 
     <div class="doors">
@@ -107,6 +109,27 @@
           <li>Classic falling blocks</li>
           <li>Brick Blast</li>
           <li>Letter Ladder · Spin to Win · Sweet Swap</li>
+        </ul>
+        <span class="go">Play now</span>
+      </a>
+
+      <a class="door classics" href="arcade/">
+        <svg class="door-art" viewBox="0 0 220 108" aria-hidden="true">
+          <circle cx="36" cy="30" r="3" fill="#fff" opacity=".7"/><circle cx="190" cy="20" r="2" fill="#fff" opacity=".6"/><circle cx="120" cy="14" r="2" fill="#fff" opacity=".5"/>
+          <polygon points="150,18 166,14 176,26 172,40 156,44 146,32" fill="none" stroke="#f1dcc2" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M60 22 l-8 16 h16 z" fill="#e8f0ff"/><rect x="58" y="30" width="4" height="10" fill="#3a6ff0"/>
+          <rect x="70" y="62" width="70" height="22" rx="8" fill="#7b4bd1"/>
+          <rect x="60" y="74" width="18" height="20" rx="4" fill="#17181c"/><rect x="132" y="74" width="18" height="20" rx="4" fill="#17181c"/>
+          <circle cx="105" cy="54" r="11" fill="#f2b98a"/><path d="M93 52 a12 12 0 0 1 24 0 z" fill="#17a7a0"/>
+          <circle cx="188" cy="80" r="14" fill="#8a4a2a"/><path d="M176 74 c4-9 20-9 24 0 c-6-3-9 3-12 1 s-8 3-12-1z" fill="#d8321f"/>
+        </svg>
+        <p class="tag">Five arcade classics</p>
+        <h2>Arcade</h2>
+        <p>A 3D kart race with the whole family, a run-and-jump platformer, and three space and robot shooters.</p>
+        <ul>
+          <li>Meatball Kart</li>
+          <li>Meatball Bros.</li>
+          <li>Star Swarm · Meteoroids · Boom Bots 3D</li>
         </ul>
         <span class="go">Play now</span>
       </a>

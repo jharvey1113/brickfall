@@ -17,6 +17,18 @@ That link is a door chooser: the quick games live at `/brickfall/games/`, and th
 
 Every game has its own soundtrack, sound effects, and random cheers for good moves. Use the music and sound buttons (or **M**) to turn them on or off. On iPhone, the silent switch mutes the game.
 
+## Arcade
+
+The third door, `/brickfall/arcade/`, holds five standalone arcade games. Each is a single `index.html` in its own folder under `docs/arcade/`, with a small **‚Üê Arcade** link back:
+
+- **Meatball Kart** (`meatball-kart/`): a 3D kart racer with seven family racers, each with a signature throw.
+- **Meatball Bros.** (`meatball-bros/`): a six-level platformer starring Vinny and Dom.
+- **Star Swarm** (`star-swarm/`): a formation space shooter with tractor beams and a double fighter.
+- **Meteoroids** (`meteoroids/`): a vector-style rock shooter.
+- **Boom Bots 3D** (`boom-bots/`): a first-person robot-factory blaster.
+
+These are copies of the games in the [games](https://github.com/jharvey1113/games) repo; update them there first, then copy them over.
+
 ## Family leaderboard and crowns
 
 Players enter a name once, and scores save automatically to a shared board (This week / All time). The all-time #1 in each game holds that game's crown, shown on the home screen. When someone takes it, the home screen announces who stole the crown from whom.
@@ -51,6 +63,6 @@ In Letter Ladder, swipe across the letters or tap them one at a time and press ‚
 ## Files
 
 - `index.html` is the game source.
-- `docs/index.html` is the door chooser, and `docs/games/index.html` is the published arcade that GitHub Pages serves.
+- `docs/index.html` is the door chooser, `docs/arcade/` holds the arcade games, and `docs/games/index.html` is the published arcade that GitHub Pages serves.
 - `build.js` regenerates `docs/games/index.html` from the source. Run `node build.js` after editing `index.html`.
 - `tools/words.txt` is the Letter Ladder word list, and `tools/gen-ladder.js` rebuilds the levels from it into `index.html`. Run `node tools/gen-ladder.js` after editing the word list.
